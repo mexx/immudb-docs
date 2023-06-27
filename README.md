@@ -2,7 +2,7 @@
 
 <p>
     <a href="https://immudb.io/">
-        <img src="img/immudb-mascot-small.png" alt="immudb logo" width=200>
+        <img src="https://docs.immudb.io/mascot.png" alt="immudb logo" width=200>
     </a>
 </p>
 
