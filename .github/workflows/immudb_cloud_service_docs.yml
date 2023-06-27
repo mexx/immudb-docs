@@ -28,7 +28,7 @@ jobs:
 
       - name: Copy .md files
         run: |
-          cd /home/runner/work/codenotary/immudb.io
+          cd /home/runner/work/codenotary/immudb-docs/immudb-docs
           tree
           mkdir -p immudb-docs/master
           find src/master -name "*.md" -exec cp {} immudb-docs/master \;
