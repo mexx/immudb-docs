@@ -1,38 +1,40 @@
 <p>
-    <a href="https://codenotary.io/technologies/immudb">
+    <a href="https://immudb.io/">
         <img src="https://docs.immudb.io/mascot.png" alt="immudb logo" width=200>
     </a>
 </p>
 
-<h1>immudb docs</h1>
+<h1>immudb docs</h1>  
     
 <p>
-    <a href="https://immudb.io">immudb</a> - world’s fastest immutable database. Immudb's documentation and homepage is built with Vuepress and publicly hosted on GitHub Pages. 
-    <br/>
-    <br/>
-    <a href="https://codenotary.io/technologies/immudb">Homepage</a>
+    <a href="https://immudb.io/">immudb</a> - world’s fastest immutable database. immudb's documentation is built with Docusaurus.
+    <br><br/>
+    <a href="https://immudb.io/">Homepage</a>
     ·
+    <!-- #FIXME update with the most recent link -->
     <a href="https://docs.immudb.io/">Documentation</a>
     ·
     <a href="https://github.com/codenotary/immudb/issues">Issue Tracker</a>
 </p>
 
-<br/>
-<br/>
+<br><br/>
 
-## Running documentation locally
+## Running documentation locally  
 
-Requirements: node version v14.18.3 (NOT working with latest node versions)
 
-1. Install dependencies by entering 
+1. Install dependencies
 ```
 $ yarn
 ```
-2. From the root directory, enter 
+
+1. From the root directory, 
 ```
 $ yarn start
 ```
+
+
 This command starts a local development server and opens up [http://localhost:3000](http://localhost:3000). Most changes are reflected live without having to restart the server.`
+
 
 ## Indexing to algolia
 
