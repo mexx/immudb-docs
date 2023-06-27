@@ -26,12 +26,19 @@ jobs:
           repository: codenotary/immudb.io
           path: master
 
+      - name: Checkout release notes
+        uses: actions/checkout@v3
+        with:
+          repository: codenotary/immudb
+          path: blob/v1.5.0
+
       - name: Copy .md files
         run: |
           cd /home/runner/work/immudb-docs/immudb-docs
           tree
           mkdir -p immudb-docs/imported-docs
           find master/src/master -name "*" -exec cp -r {} immudb-docs/imported-docs/ \;
+          find immudb/blob/v1.5.0/CHANGELOG.md -exec cp -r {} immudb-docs/imported-docs/ \;
 
       - name: Commit and push
         run: |
