@@ -28,10 +28,10 @@ jobs:
 
       - name: Copy .md files
         run: |
-          cd /home/runner/work/immudb-docs/immudb-docs
+          cd /home/runner/work/codenotary/immudb.io
           tree
-          mkdir -p immudb-docs/master
-          find immudb-cloud-service/doc -name "*.md" -exec cp {} immudb-docs/master \;
+          mkdir -p immudb.io/src
+          find master -name "*" -exec cp {} immudb-docs/master \;
 
       - name: Commit and push
         run: |
