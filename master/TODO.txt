@@ -1,0 +1,12 @@
+
+#TODO Put sidebar in the right order with docs.immudb.io 
+#TODO Rename folders with category
+
+#TODO Remove Dark Theme
+#FIXME Icons in the footer gap
+
+
+
+LATER
+
+#TODO Remove cluter from the code

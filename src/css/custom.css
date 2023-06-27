@@ -1,0 +1,72 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #244583;
+  --ifm-color-primary-dark: #203e76;
+  --ifm-color-primary-darker: #1f3b6f;
+  --ifm-color-primary-darkest: #19305c;
+  --ifm-color-primary-light: #284c90;
+  --ifm-color-primary-lighter: #294f97;
+  --ifm-color-primary-lightest: #2f5aaa;
+
+  --ifm-background-color: #fefefe;
+  
+  --ifm-code-font-size: 95%;
+  
+  --ifm-color-secondary: #fdc02c;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --ifm-color-primary: #fdc02c;
+  --ifm-color-primary-dark: #fdb70f;
+  --ifm-color-primary-darker: #fab202;
+  --ifm-color-primary-darkest: #ce9202;
+  --ifm-color-primary-light: #fdc949;
+  --ifm-color-primary-lighter: #fdcd58;
+  --ifm-color-primary-lightest: #feda84;
+
+  /* --prism-background-color: #081D2B !important; */
+
+}
+
+.button {
+  border-radius: 90px;
+  color: var(--ifm-color-white) !important;
+}
+
+.button:hover {
+  border-radius: 90px;
+  background-color: var(--ifm-color-secondary);
+}
+
+.button--link:hover {
+  border-radius: 90px;
+  background-color: var(--ifm-color-primary) ;
+}
+
+.navbar {
+  background-color: var(--ifm-color-primary) !important;
+  color: var(--ifm-color-white) !important;
+}
+
+.navbar__link, .navbar__item {
+  color: var(--ifm-color-white) !important;
+}
+
+.footer {
+  background-color: var(--ifm-color-primary) !important;
+}
+
+.footer__title, 
+.footer__link-item,
+.footer__copyright,
+.footer__item {
+  color: var(--ifm-color-white) !important;
+}
