@@ -31,7 +31,7 @@ jobs:
           cd /home/runner/work/immudb-docs/immudb-docs
           tree
           mkdir -p immudb-docs/master
-          find master/src/master -name "*" -exec cp {} immudb-docs/master/imported-docs \;
+          find master/src/master -name "*" -exec cp {} immudb-docs/master/imported-docs/ \;
 
       - name: Commit and push
         run: |
