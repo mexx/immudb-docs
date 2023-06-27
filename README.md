@@ -2,7 +2,7 @@
 
 <p>
     <a href="https://immudb.io/">
-        <img src="https://docs.immudb.io/mascot.png" alt="immudb logo" width=200>
+        <img src="img/immudb-mascot-small.png" alt="immudb logo" width=200>
     </a>
 </p>
 
@@ -27,7 +27,6 @@ immudb can be used both as a key-value store, or as a relational database (SQL).
 
 immudb can be run as full database server with replicas or easily embedded as a lightweight database into application.
 
-<br><br/>
 
 ## Running documentation locally  
 
