@@ -30,8 +30,8 @@ jobs:
         run: |
           cd /home/runner/work/codenotary/immudb.io
           tree
-          mkdir -p immudb.io/src
-          find master -name "*" -exec cp {} immudb-docs/master \;
+          mkdir -p immudb-docs/master
+          find src/master -name "*.md" -exec cp {} immudb-docs/master \;
 
       - name: Commit and push
         run: |
