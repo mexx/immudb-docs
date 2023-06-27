@@ -24,14 +24,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: codenotary/immudb.io
-          path: master
+          path: immudbio
 
       - name: Copy .md files
         run: |
           cd /home/runner/work/immudb-docs/immudb-docs
           tree
           mkdir -p immudb-docs/imported-docs
-          find master/src/master -exec cp -a {} immudb-docs/imported-docs/ \;
+          find immudbio/src/master -exec cp -r {} immudb-docs/imported docs/ \;
 
       - name: Commit and push
         run: |
