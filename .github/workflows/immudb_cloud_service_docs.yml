@@ -23,15 +23,15 @@ jobs:
       - name: Checkout immudb.io
         uses: actions/checkout@v3
         with:
-          repository: codenotary/immudb.io
-          path: master/src
+          repository: codenotary/immudb.io/master/src
+          path: imported
 
       - name: Copy .md files
         run: |
           cd /home/runner/work/immudb-docs/immudb-docs
           tree
           mkdir -p immudb-docs/imported-docs
-          find src/master -name "*" -exec cp -r {} immudb-docs/imported-docs/ \;
+          find master -name "*" -exec cp -r {} immudb-docs/imported-docs/ \;
 
       - name: Commit and push
         run: |
