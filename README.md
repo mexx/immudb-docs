@@ -1,42 +1,45 @@
-# Website
+<p>
+    <a href="https://codenotary.io/technologies/immudb">
+        <img src="https://docs.immudb.io/mascot.png" alt="immudb logo" width=200>
+    </a>
+</p>
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+<h1>immudb docs</h1>
+    
+<p>
+    <a href="https://immudb.io">immudb</a> - world’s fastest immutable database. Immudb's documentation and homepage is built with Vuepress and publicly hosted on GitHub Pages. 
+    <br/>
+    <br/>
+    <a href="https://codenotary.io/technologies/immudb">Homepage</a>
+    ·
+    <a href="https://docs.immudb.io/">Documentation</a>
+    ·
+    <a href="https://github.com/codenotary/immudb/issues">Issue Tracker</a>
+</p>
 
-### Installation
+<br/>
+<br/>
 
+## Running documentation locally
+
+Requirements: node version v14.18.3 (NOT working with latest node versions)
+
+1. Install dependencies by entering 
 ```
 $ yarn
 ```
-
-### Local Development
-
+2. From the root directory, enter 
 ```
 $ yarn start
 ```
+This command starts a local development server and opens up [http://localhost:3000](http://localhost:3000). Most changes are reflected live without having to restart the server.`
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+## Indexing to algolia
 
-### Build
+From the root directory, enter `npm run algolia:index`.
+> Not up to date with latest changes
 
-```
-$ yarn build
-```
+## Copyright and license
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
-```
-
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
-# immudb-docs
+Homepage and documentation copyright 2017-2023 [Immudb Authors](https://github.com/codenotary/immudb/graphs/contributors). 
+Docs released under [Creative Commons](https://github.com/codenotary/immudb.io/blob/master/LICENSE).
