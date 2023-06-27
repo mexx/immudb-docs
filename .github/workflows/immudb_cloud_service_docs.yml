@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: codenotary/immudb
-          path: v1.5.0
+          path: master
 
       - name: Copy .md files
         run: |
@@ -38,7 +38,7 @@ jobs:
           tree
           mkdir -p immudb-docs/imported-docs
           find master/src/master -name "*" -exec cp -r {} immudb-docs/imported-docs/ \;
-          find ./v1.5.0 -name "CHANGELOG.md" -exec cp {} immudb-docs/imported-docs/ \;
+          find master -name "CHANGELOG.md" -exec cp {} immudb-docs/imported-docs/ \;
 
       - name: Commit and push
         run: |
