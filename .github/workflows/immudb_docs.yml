@@ -31,14 +31,13 @@ jobs:
           cd /home/runner/work/immudb-docs/immudb-docs/
           tree
           mkdir -p immudb-docs/imported-docs
-          tree
-          find -r immudbio/src/master -exec cp -a {} imported-docs/ \;
+          find immudbio/src/master -exec cp -a {} immudb-docs/imported-docs/ \;
 
       - name: Commit and push
         run: |
           cd immudb-docs
           git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.name "GitHub Action"z
           if ! git diff --quiet; then
             git add -A
             git commit -m "Update documentation from immudb.io/master"
