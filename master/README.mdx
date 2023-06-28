@@ -1,0 +1,73 @@
+---
+title: Intro
+---
+
+# **immudb** - Open Source Immutable Database
+
+<div>
+    <a href="https://immudb.io/" style={{padding:4}}>Homepage</a>
+    ·
+    <a href="https://play.codenotary.com" style={{padding:4}}>Playground</a>
+    ·
+    <a href="https://docs.immudb.io/" style={{padding:4}}>Documentation</a>
+    ·
+    <a href="https://github.com/codenotary/immudb/issues" style={{padding:4}}>Issue Tracker</a>
+</div>
+
+
+<p>
+    <a href="https://immudb.io/">
+        <img src="https://docs.immudb.io/mascot.png" alt="immudb logo" width={200}></img>
+    </a>
+</p>
+    
+<br/>
+
+- immudb is a database written in Go, but unlike other databases, it is immutable: history is preserved and can't be changed without clients noticing.
+
+- immudb can be used both as a key-value store, or as a relational database (SQL).
+
+- immudb can be run as full database server with replicas or easily embedded as a lightweight database into application.
+
+---
+
+### Playground
+
+[**immudb Playground**](https://play.codenotary.com) is an interactive environment for learning about immudb:
+
+<img src="/playground.jpg" alt="immudb Playground" width="600"/>
+
+
+---
+
+### Web Console
+
+immudb includes an embedded web console which can be accessed via the default port 8080 (`web-server-port` option).
+
+
+<img src="/webconsole.jpg" alt="immudb Webconsole" width="600"/>
+
+
+The console allows you to:
+
+* Metrics for the default database
+* Execute SQL queries
+* Configure users
+* Create databases
+* Manage permissions for users
+
+### Accessing the Web Console
+
+Once immudb has started, it will tell you if the web console is enabled and where it is listening:
+
+```
+immudb  2021/05/17 21:38:30 INFO: Webconsole enabled: 0.0.0.0:8080
+immudb  2021/05/17 21:38:30 INFO: Web API server enabled on 0.0.0.0:8080/api (http)
+```
+
+Just navigating to that address in your web browser will bring you to the login screen:
+
+
+<img src="/browser.png" alt="immudb Webconsole Login Page" width="600"/>
+
+

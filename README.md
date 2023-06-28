@@ -48,7 +48,7 @@ This command starts a local development server and opens up [http://localhost:30
 ## Indexing to algolia
 
 From the root directory, enter `npm run algolia:index`.
-> Not up to date with latest changes
+> :warning: Not up to date with latest changes
 
 ## Copyright and license
 
