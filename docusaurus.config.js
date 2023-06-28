@@ -1,9 +1,6 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
-
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'immudb Docs',
@@ -38,10 +35,11 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          routeBasePath: 'master',
+          routeBasePath: '/',
           path: 'master',
           sidebarPath: require.resolve('./sidebars.js'),
         },
+
         blog: {
           showReadingTime: true,
         },
@@ -55,8 +53,13 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      // Force default theme light
+      colorMode: {
+        defaultMode: 'light',
+        disableSwitch: true,
+        respectPrefersColorScheme: false,
+      },
+
       navbar: {
 
         logo: {
@@ -157,9 +160,6 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} by immudb. All rights reserved`,
       },
       prism: {
-        theme: lightCodeTheme,
-        darkTheme: darkCodeTheme,
-
         additionalLanguages: ['csharp', 'java','bash'],
       },
     }),

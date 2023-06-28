@@ -1,17 +1,15 @@
-# immudb explained
+---
+title: immudb Explained
+sidebar_position: 2
+---
 
-<WrappedSection>
+# immudb explained
 
 ## What is immudb?
 
 immudb is database with built-in cryptographic proof and verification. It can track changes in sensitive data and the integrity of the history will be protected by the clients, without the need to trust the server.
 
 immudb can operate both as a key-value or relational (SQL) database. You can add new transactions, but deletion or modification of older transactions isn’t allowed, thus making your data immutable. When a key record's value changes over time (such as a bank balance), you can get multiple instances with different timestamps to give you the complete history of that record's changes. You can store a variety of common data types, verification checksums, or JSON objects.
-
-</WrappedSection>
-
-
-<WrappedSection>
 
 ## What makes immudb special?
 
@@ -23,9 +21,6 @@ immudb can operate both as a key-value or relational (SQL) database. You can add
 
 - **Protect yourself from cyber attacks.** While Cyber Security is an important part of your organization’s business plan, immudb provides another layer of security to ensure data integrity even in the event your perimeter is breached during an attack. Data cannot be deleted or modified once stored into immudb. Additions of new data are logged and auditable, enabling you to view any suspect additions made during the intrusion.
 
-</WrappedSection>
-
-<WrappedSection>
 
 ## How can I use immudb?
 
@@ -42,9 +37,6 @@ Depending on your use case, immudb might function as your application's primary 
 - Protect medical data, test results, or recipes from alteration.
 - Companies use immudb to protect credit card transactions and to secure processes by storing digital certificates and checksums.
 
-</WrappedSection>
-
-<WrappedSection>
 
 ## Key value and SQL
 
@@ -52,33 +44,20 @@ immudb can be used as a tamper-proof key value store or SQL database, with audit
 
 Key value is a foundation layer for SQL, meaning that SQL is using key value store capabilities underneath.
 
-</WrappedSection>
-
-<WrappedSection>
 
 ## Standalone and Embeddable
 
 immudb can be run as full database server with [replicas](production/replication.md) or easily [embedded](embedded/embedding.md) as a lightweight database into application.
 
-</WrappedSection>
-
-<WrappedSection>
 
 ## Running platforms
 
 immudb server runs in most operating systems: BSD, Linux, OS X, Solaris, Windows, IBM z/OS.
 
-</WrappedSection>
-
-<WrappedSection>
 
 ## S3 Storage Backend
 
 immudb can store its data in the Amazon S3 service (or a compatible alternative).
-
-</WrappedSection>
-
-<WrappedSection>
 
 ## How is immutability ensured?
 
@@ -89,9 +68,6 @@ That means that an auditor or a third party client, for instance, could verify t
 
 Check [auditor](production/auditor.md) section for additional details.
 
-</WrappedSection>
-
-<WrappedSection>
 
 ## Theoretical limits
 
@@ -119,8 +95,7 @@ Theoretical limits may be determined by a couple of elements:
 - max value length: 32 MB (max size: 2^56-1 bytes)
 - max key length: 1024 Bytes (max length: 2^31-1 bytes)
 
-</WrappedSection>
 
-::: tip
+:::tip
 Download the [immudb short research paper](https://codenotary.s3.amazonaws.com/Research-Paper-immudb-CodeNotary_v3.0.pdf) to learn about the technical foundations of immudb.
 :::

@@ -1,27 +1,32 @@
 ---
+slug: /
 title: Intro
+hide_title: true
+sidebar_position: 1
 ---
-
-# **immudb** - Open Source Immutable Database
-
-<div>
-    <a href="https://immudb.io/" style={{padding:4}}>Homepage</a>
-    ·
-    <a href="https://play.codenotary.com" style={{padding:4}}>Playground</a>
-    ·
-    <a href="https://docs.immudb.io/" style={{padding:4}}>Documentation</a>
-    ·
-    <a href="https://github.com/codenotary/immudb/issues" style={{padding:4}}>Issue Tracker</a>
+<div className="hero">
+    <div class="container">
+        <h1 class="hero__title">immudb</h1>
+        <p class="hero__subtitle">Open Source Immutable Database</p>
+        <iframe src="https://ghbtns.com/github-btn.html?user=codenotary&repo=immudb&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="170" height="30" title="GitHub"></iframe>
+        <br/>
+        <h4 class="padding-vert--md" >
+            <a href="https://immudb.io/" style={{padding:4,}}>Homepage</a>
+            ·
+            <a href="https://play.codenotary.com" style={{padding:4,}}>Playground</a>
+            ·
+            <a href="https://github.com/codenotary/immudb/issues" style={{padding:4,}}>Issue Tracker</a>
+        </h4>
+    </div>
+    <div class="container">
+        <a href="https://immudb.io/">
+            <img src="https://docs.immudb.io/mascot.png" alt="immudb logo" width={200}></img>
+        </a>
+    </div>
 </div>
 
 
-<p>
-    <a href="https://immudb.io/">
-        <img src="https://docs.immudb.io/mascot.png" alt="immudb logo" width={200}></img>
-    </a>
-</p>
-    
-<br/>
+## 3 things to know about immudb
 
 - immudb is a database written in Go, but unlike other databases, it is immutable: history is preserved and can't be changed without clients noticing.
 
@@ -29,20 +34,18 @@ title: Intro
 
 - immudb can be run as full database server with replicas or easily embedded as a lightweight database into application.
 
----
 
-### Playground
+
+## Playground
 
 [**immudb Playground**](https://play.codenotary.com) is an interactive environment for learning about immudb:
 
 <img src="/playground.jpg" alt="immudb Playground" width="600"/>
 
 
----
+## Web Console
 
-### Web Console
-
-immudb includes an embedded web console which can be accessed via the default port 8080 (`web-server-port` option).
+immudb includes an embedded web console which can be accessed via the default `port 8080` (`web-server-port` option).
 
 
 <img src="/webconsole.jpg" alt="immudb Webconsole" width="600"/>
@@ -71,3 +74,7 @@ Just navigating to that address in your web browser will bring you to the login 
 <img src="/browser.png" alt="immudb Webconsole Login Page" width="600"/>
 
 
+## Release Notes
+
+- [immudb release notes](https://github.com/codenotary/immudb/releases)
+- [immugw release notes](https://github.com/codenotary/immugw/releases)
