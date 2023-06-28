@@ -1,0 +1,47 @@
+name: Copy .md files from immudb.io/master
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    
+jobs:
+  copy-md-files:
+    runs-on: ubuntu-latest
+    steps:            
+      - name: Checkout immudb docs master
+        uses: actions/checkout@v3
+        with:
+          repository: codenotary/immudb-docs
+          path: immudb-docs
+          
+      - name: Configure default branch name
+        run: |
+            git config --global init.defaultBranch main
+            
+      - name: Checkout immudb.io
+        uses: actions/checkout@v3
+        with:
+          repository: codenotary/immudb.io
+          path: immudbio
+
+      - name: Copy .md files
+        run: |
+          cd /home/runner/work/immudb-docs/immudb-docs/
+          tree
+          mkdir -p immudb-docs/imported-docs
+          find immudbio/src/master -exec cp {} immudb-docs/imported-docs/ \;
+
+      - name: Commit and push
+        run: |
+          cd immudb-docs
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"z
+          if ! git diff --quiet; then
+            git add -A
+            git commit -m "Update documentation from immudb.io/master"
+            git push
+          else
+            echo "No changes to commit. Skipping commit and push."
+          fi
