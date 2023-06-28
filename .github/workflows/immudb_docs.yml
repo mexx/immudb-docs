@@ -28,10 +28,11 @@ jobs:
 
       - name: Copy .md files
         run: |
-          cd /home/runner/work/immudb-docs/immudb-docs
+          cd /home/runner/work/immudb-docs/immudb-docs/
           tree
           mkdir -p immudb-docs/imported-docs
-          find immudbio/src/master -exec cp -r {} immudb-docs/imported-docs/ \;
+          tree
+          find -r immudbio/src/master -exec cp -a {} imported-docs/ \;
 
       - name: Commit and push
         run: |
