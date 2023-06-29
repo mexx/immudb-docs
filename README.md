@@ -12,9 +12,7 @@
     <a href="https://hub.docker.com/r/codenotary">🎉 20M pulls form DockerHub</a>
 </div>
 
-<div>
-    <iframe src="https://ghbtns.com/github-btn.html?user=codenotary&repo=immudb&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="170" height="30" title="GitHub"></iframe>
-</div>
+Don't forget to ⭐ this repo if you like immudb!
     
 <p>
     <a href="https://immudb.io/">immudb</a> - world’s fastest immutable database. immudb's documentation is built with Docusaurus.
