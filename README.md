@@ -7,17 +7,23 @@
 </p>
 
 <h1>Welcome to the immudb docs</h1>  
+
+ <div class="padding-vert--md">
+        <a href="https://hub.docker.com/r/codenotary">🎉 20M pulls form DockerHub</a>
+</div>
+
+<iframe src="https://ghbtns.com/github-btn.html?user=codenotary&repo=immudb&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="170" height="30" title="GitHub"></iframe>
     
 <p>
     <a href="https://immudb.io/">immudb</a> - world’s fastest immutable database. immudb's documentation is built with Docusaurus.
     <br><br/>
     <a href="https://immudb.io/">Homepage</a>
     ·
-    <!-- #FIXME update with the most recent link -->
     <a href="https://docs.immudb.io/">Documentation</a>
     ·
     <a href="https://github.com/codenotary/immudb/issues">Issue Tracker</a>
 </p>
+
 
 Great to see you here!
 

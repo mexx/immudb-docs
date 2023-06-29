@@ -75,9 +75,9 @@ const config = {
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/codenotary/immudb',
-            label: 'GitHub',
+            href: 'https://hub.docker.com/r/codenotary',
             position: 'right',
+            label: '🎉 20M pulls from docker hub!',
           },
           {
             type: 'html',
