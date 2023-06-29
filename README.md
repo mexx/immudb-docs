@@ -9,10 +9,12 @@
 <h1>Welcome to the immudb docs</h1>  
 
  <div class="padding-vert--md">
-        <a href="https://hub.docker.com/r/codenotary">🎉 20M pulls form DockerHub</a>
+    <a href="https://hub.docker.com/r/codenotary">🎉 20M pulls form DockerHub</a>
 </div>
 
-<iframe src="https://ghbtns.com/github-btn.html?user=codenotary&repo=immudb&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="170" height="30" title="GitHub"></iframe>
+<div>
+    <iframe src="https://ghbtns.com/github-btn.html?user=codenotary&repo=immudb&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="170" height="30" title="GitHub"></iframe>
+</div>
     
 <p>
     <a href="https://immudb.io/">immudb</a> - world’s fastest immutable database. immudb's documentation is built with Docusaurus.
