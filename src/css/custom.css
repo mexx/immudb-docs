@@ -60,6 +60,10 @@
   color: var(--ifm-color-white) !important;
 }
 
+.githubStars {
+  margin-bottom: -4px;
+}
+
 .footer {
   background-color: var(--ifm-color-primary) !important;
 }
@@ -70,3 +74,4 @@
 .footer__item {
   color: var(--ifm-color-white) !important;
 }
+

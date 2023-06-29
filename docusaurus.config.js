@@ -79,6 +79,11 @@ const config = {
             label: 'GitHub',
             position: 'right',
           },
+          {
+            type: 'html',
+            position: 'right',
+            value: '<iframe class="githubStars" src="https://ghbtns.com/github-btn.html?user=codenotary&repo=immudb&type=watch&count=true&size=small" frameborder="0" scrolling="0" width="140" height="20" title="GitHub"></iframe>',
+          },
         ],
       },
       footer: {
