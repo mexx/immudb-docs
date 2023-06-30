@@ -1,9 +1,6 @@
 name: Copy .md files from immudb.io/master
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     
 jobs:
