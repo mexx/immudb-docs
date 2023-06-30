@@ -15,4 +15,4 @@ jobs:
           repository: codenotary/immudb-docs
           path: immudb-docs
       - name: Build
-        run: docker build immdub-docs
+        run: docker build immudb-docs
