@@ -83,7 +83,7 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 :::
 
 ::: tab Others
-If you're using another development language, please refer to the <a href="../connecting/immugw">immugw</a> option.
+If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
 :::
 
 ::::
@@ -252,7 +252,7 @@ Do you want to make a feature request or help out? Open an issue on [Node.js sdk
 :::
 
 ::: tab Others
-If you're using another development language, please refer to the <a href="../connecting/immugw">immugw</a> option.
+If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
 :::
 
 ::::
@@ -418,7 +418,7 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 :::
 
 ::: tab Others
-If you're using another development language, please refer to the <a href="../connecting/immugw">immugw</a> option.
+If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
 :::
 
 ::::

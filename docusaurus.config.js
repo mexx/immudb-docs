@@ -71,7 +71,6 @@ const config = {
             position: 'left',
             label: 'Tutorial',
           },
-          {to: '/blog', label: 'Blog', position: 'left'},
           {
             href: 'https://hub.docker.com/r/codenotary',
             position: 'right',
@@ -155,7 +154,7 @@ const config = {
               },
               {
                 label: 'Terms of Service',
-                href: '/terms-of-service',
+                href: '/terms-of-use',
               },
             ]
           }
