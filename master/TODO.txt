@@ -2,4 +2,4 @@
 
 LATER
 
-#TODO Remove cluter from the code
+#TODO Remove clutter from the code
