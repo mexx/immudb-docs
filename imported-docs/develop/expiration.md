@@ -70,7 +70,7 @@ Do you want to make a feature request or help out? Open an issue on [Node.js sdk
 :::
 
 ::: tab Others
-If you're using another development language, please refer to the <a href="../connecting/immugw">immugw</a> option.
+If you're using another development language, please refer to the [immugw](../connecting/immugw.md) option.
 :::
 
 ::::
