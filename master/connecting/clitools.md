@@ -1,6 +1,9 @@
-# CLI tools
+---
+title: CLI tools
+sidebar_position: 1
+---
 
-<WrappedSection>
+# CLI tools
 
 Before any operations can be run by immuadmin or immuclient, it is necessary to authenticate against the running immudb server.
 
@@ -11,10 +14,6 @@ When immudb is first run, it is ready to use immediately with the default databa
 - Password: immudb
 - Address: 127.0.0.1
 - Port: 3322
-
-</WrappedSection>
-
-<WrappedSection>
 
 ## immuadmin
 
@@ -33,10 +32,6 @@ Alternatively, you may [pull immuadmin docker image from DockerHub](https://hub.
 ```bash
 $ docker run -it --rm --name immuadmin codenotary/immuadmin:latest status
 ```
-
-</WrappedSection>
-
-<WrappedSection>
 
 ### Basic operations
 
@@ -75,10 +70,6 @@ For detailed description of immuadmin command arguments use help
 $ ./immuadmin help
 ```
 
-</WrappedSection>
-
-<WrappedSection>
-
 ## immuclient
 
 immuclient is used for interacting with databases, like reading, writing and querying for data or invoking SQL. 
@@ -96,10 +87,6 @@ Alternatively, you may [pull immuclient docker image from DockerHub](https://hub
 ```bash
 $ docker run -it --rm --net host --name immuclient codenotary/immuclient:latest
 ```
-
-</WrappedSection>
-
-<WrappedSection>
 
 ### Basic operations
 
@@ -161,10 +148,6 @@ key:            balance
 value:          9001
 ```
 
-</WrappedSection>
-
-<WrappedSection>
-
 ### SQL operations
 
 In addition to a key-value store, immudb supports the relational model (SQL). For example, to create a table:
@@ -209,10 +192,6 @@ $ ./immuclient query "SELECT id, name, salary FROM people;"
 |                      2 | "Bob"                    |                      30000 |
 +------------------------+--------------------------+----------------------------+
 ```
-
-</WrappedSection>
-
-<WrappedSection>
 
 ### Time travel
 
@@ -270,10 +249,6 @@ $ ./immuclient query "SELECT peoplenow.id, peoplenow.name, peoplethen.salary, pe
 |                         2 | "Bob"                       |                          30000 |                         30000 |
 +---------------------------+-----------------------------+--------------------------------+-------------------------------+
 ```
-
-</WrappedSection>
-
-<WrappedSection>
 
 ### KV Data revisions
 
@@ -362,6 +337,4 @@ tx:       2
 rev:      1
 key:      some@email.address
 value:    active
-```
-
-</WrappedSection>
+``
