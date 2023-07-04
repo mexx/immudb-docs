@@ -3,3 +3,19 @@
 LATER
 
 #TODO Remove clutter from the code
+
+#TODO I’d like to have a dark theme available.
+
+#TODO Intro page, content seems to be floating around egg, the logo, stars, etc
+
+#TODO It might be better to not include the playground and web console there but in “Connecting with immudb” ?
+
+#TODO In section “Running immudb”, Building from source and Configuration should be after Running subsections?
+
+#TODO Icons for section selection seems to be missing image…
+
+#TODO In section “Connecting with immudb”, it should start with CLI tools, then SDKs
+
+#TODO In section “Develop with immudb”, it should start with “Using key value”, “Queries and History”, but more important, the “Reads and Writes” is duplicated in “Using key value” and the parent section, same with other key-value subsections
+
+#TODO In section “Embedded”, links to go samples is shown instead of the sample code.

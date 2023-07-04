@@ -1,9 +1,7 @@
 {
-    "label": "Develop with immudb",
+    "label": "Using key value",
     "link": {
       "type": "generated-index"
-    },
-    "position": 7
-    
+    }
   }
   
