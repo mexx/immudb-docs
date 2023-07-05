@@ -104,3 +104,13 @@
 .theme-code-block {
   background-color: #092233 !important;
 }
+
+/* Hero - Header Landing page */
+
+.hero {
+  padding: 8px 0 !important;
+}
+
+.hero .container {
+  padding: 0 !important;
+}
