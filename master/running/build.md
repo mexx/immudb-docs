@@ -1,6 +1,8 @@
-# Building from source
+---
+sidebar_position: 4
+---
 
-<WrappedSection>
+# Building from source
 
 ### Build the binaries
 
@@ -18,20 +20,12 @@ immudb can be cross compiled for different systems and architectures by setting 
 GOOS=windows GOARCH=amd64 make all
 ```
 
-</WrappedSection>
-
-<WrappedSection>
-
 ### macOS specific
 
 The community already added immudb to [HomeBrew](https://formulae.brew.sh/formula/immudb), therefore you can simply run
 ```bash
 brew install immudb
 ```
-
-</WrappedSection>
-
-<WrappedSection>
 
 ### Build the Docker images
 
@@ -42,5 +36,3 @@ docker build -t myown/immudb:latest -f Dockerfile .
 docker build -t myown/immuadmin:latest -f Dockerfile.immuadmin .
 docker build -t myown/immuclient:latest -f Dockerfile.immuclient .
 ```
-
-</WrappedSection>

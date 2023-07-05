@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # SDKs
 
-::: tip
+:::tip
 Examples used in this documentation can be found in [immudb examples repository](https://github.com/codenotary/immudb-client-examples).
 :::
 

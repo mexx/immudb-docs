@@ -53,9 +53,7 @@ const config = {
     ({
       // Force default theme light
       colorMode: {
-        defaultMode: 'light',
-        disableSwitch: true,
-        respectPrefersColorScheme: false,
+        respectPrefersColorScheme: true,
       },
 
       navbar: {
@@ -162,6 +160,9 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} by immudb. All rights reserved`,
       },
       prism: {
+        
+        theme: require('prism-react-renderer/themes/vsDark'),
+
         additionalLanguages: ['csharp', 'java','bash'],
       },
     }),

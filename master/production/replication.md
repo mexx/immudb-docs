@@ -51,7 +51,7 @@ $ ./immuadmin database create \
 database 'replicadb' {replica: true} successfully created
 ```
 
-::: tip
+:::tip
 
 Display all database creation flags with:
 
@@ -73,7 +73,7 @@ $ ./immudb \
     --replication-primary-host=127.0.0.1
 ```
 
-::: tip
+:::tip
 
 Display all replication flags:
 

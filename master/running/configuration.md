@@ -1,15 +1,13 @@
+---
+sidebar_position: 3
+---
 
 # Configuration
-
-<WrappedSection>
 
 This page describes how to set different settings in immudb.
 
 Settings can be specified as command line options to immudb (see `immudb -h`), in a configuration file, or as environment variables.
 
-</WrappedSection>
-
-<WrappedSection>
 
 ### Settings
 
@@ -68,9 +66,6 @@ Settings can be specified as command line options to immudb (see `immudb -h`), i
 | `web-server`                    | `true`     | enable or disable web/console server                                                                 |
 | `web-server-port`               | `8080`     | web/console server port   |
 
-</WrappedSection>
-
-<WrappedSection>
 
 ### Configuration file
 
@@ -83,10 +78,6 @@ When running immudb as a service, `immudb service install` allows to specify the
 ### Environment variables
 
 Settings specified via environment variables take override the configuration file. They are specified in the form of `IMMUDB_`, for example `IMMUDB_DIR` specifies the `dir` variable.
-
-</WrappedSection>
-
-<WrappedSection>
 
 ### Logging Levels
 
@@ -157,6 +148,3 @@ immudb 2022/11/17 14:30:02 INFO: Index 'data/systemdb/index' {ts=0, cleanup_perc
 {"caller":"codenotary/immudb/embedded/tbtree/tbtree.go:351","component":"github.com/codenotary/immudb/embedded/tbtree.Open","level":"info","message":"Reading snapshots at 'data/systemdb/index/commit'...","module":"immudb","timestamp":"2022-11-17T14:32:28.898296+05:30"}
 {"caller":"codenotary/immudb/embedded/tbtree/tbtree.go:669","component":"github.com/codenotary/immudb/embedded/tbtree.OpenWith","level":"info","message":"Index 'data/systemdb/index' {ts=2, discarded_snapshots=0} successfully loaded","module":"immudb","timestamp":"2022-11-17T14:32:28.904722+05:30"}
 ```
-
-
-</WrappedSection>

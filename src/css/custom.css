@@ -6,20 +6,18 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #244583;
-  --ifm-color-primary-dark: #203e76;
-  --ifm-color-primary-darker: #1f3b6f;
-  --ifm-color-primary-darkest: #19305c;
-  --ifm-color-primary-light: #284c90;
-  --ifm-color-primary-lighter: #294f97;
-  --ifm-color-primary-lightest: #2f5aaa;
+  --ifm-color-primary: #0d3049;
+  --ifm-color-primary-dark: #0c2b42;
+  --ifm-color-primary-darker: #0b293e;
+  --ifm-color-primary-darkest: #092233;
+  --ifm-color-primary-light: #0e3550;
+  --ifm-color-primary-lighter: #0f3754;
+  --ifm-color-primary-lightest: #113e5f;
 
   --ifm-background-color: #fefefe;
   
   --ifm-code-font-size: 95%;
-  
-  --ifm-color-secondary: #fdc02c;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.1);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -27,14 +25,21 @@
   --ifm-color-primary: #fdc02c;
   --ifm-color-primary-dark: #fdb70f;
   --ifm-color-primary-darker: #fab202;
-  --ifm-color-primary-darkest: #ce9202;
+  --ifm-color-primary-darkest: #eba702;
   --ifm-color-primary-light: #fdc949;
   --ifm-color-primary-lighter: #fdcd58;
-  --ifm-color-primary-lightest: #feda84;
+  --ifm-color-primary-lightest: #fed267;
 
-  /* --prism-background-color: #081D2B !important; */
+  --ifm-color-secondary: #0D3049;
+
+  --ifm-background-surface-color: #0b293e !important;
+  --ifm-background-color: #0b293e !important;
+
+  --docusaurus-code-bg: #0b293e;
 
 }
+
+/* Buttons */
 
 .button {
   border-radius: 90px;
@@ -51,8 +56,18 @@
   background-color: var(--ifm-color-primary) ;
 }
 
-.navbar {
+/* Navbar both web and mobile */
+.navbar, .navbar-sidebar__brand {
   background-color: var(--ifm-color-primary) !important;
+  color: var(--ifm-color-white) !important;
+}
+
+.navbar-sidebar__item .navbar-sidebar__back {
+  display: none;
+}
+
+[data-theme='dark'] .navbar, [data-theme='dark'] .footer, [data-theme='dark'] .navbar-sidebar__brand {
+  background-color: var(--ifm-color-secondary) !important;
   color: var(--ifm-color-white) !important;
 }
 
@@ -60,18 +75,32 @@
   color: var(--ifm-color-white) !important;
 }
 
+/* Github Stars in the Navbar */
 .githubStars {
   margin-bottom: -4px;
 }
 
+/* Footer */
 .footer {
   background-color: var(--ifm-color-primary) !important;
 }
 
-.footer__title, 
-.footer__link-item,
-.footer__copyright,
-.footer__item {
+[data-theme='light'] .footer__item {
+  color: var(--ifm-color-secondary) !important;
+}
+
+[data-theme='dark'] .footer__item {
   color: var(--ifm-color-white) !important;
 }
 
+.footer__title, 
+.footer__link-item,
+.footer__copyright {
+  color: var(--ifm-color-white) !important;
+}
+
+/* CodeBlocks */
+
+.theme-code-block {
+  background-color: #092233 !important;
+}
