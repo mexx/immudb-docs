@@ -8,6 +8,7 @@ sidebar_position: 2
 Examples used in this documentation can be found in [immudb examples repository](https://github.com/codenotary/immudb-client-examples).
 :::
 
+
 <WrappedSection>
 
 In the most common scenario, you would perform write and read operations on the database talking to the server. In this case your application will be a client to immudb.

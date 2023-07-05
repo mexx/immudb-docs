@@ -58,7 +58,6 @@ Display all database creation flags with:
 ```bash
 $ ./immuadmin help database create 
 ```
-
 :::
 
 ### Creating a second immudb instance to replicate systemdb and defaultdb behaves similarly
@@ -80,8 +79,8 @@ Display all replication flags:
 ```bash
 $ ./immudb --help
 ```
-
 :::
+
 
 </WrappedSection>
 

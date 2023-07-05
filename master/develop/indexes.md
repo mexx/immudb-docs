@@ -1,7 +1,5 @@
 # Secondary indexes
 
-<WrappedSection>
-
 ## Sorted sets
 
 On top of the key value store immudb provides secondary indexes to help developers to handle complex queries.
@@ -58,15 +56,138 @@ Reading data from the set can be done using the following operations:
 > set the `SinceTx` to a very high value exceeding the most recent transaction id
 > (e.g. maximum int value) and set `NoWait` to `true`.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-indexes/main.go
-:::
+```go
+package main
 
-::: tab Java
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"math"
+
+	"github.com/codenotary/immudb/pkg/api/schema"
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	i1, err := client.Set(
+
+		context.TODO(),
+		[]byte(`user1`),
+		[]byte(`user1@mail.com`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	i2, err := client.Set(
+		context.TODO(),
+		[]byte(`user2`),
+		[]byte(`user2@mail.com`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	i3, err := client.Set(
+		context.TODO(),
+		[]byte(`user3`),
+		[]byte(`user3@mail.com`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	i4, err := client.Set(
+		context.TODO(),
+		[]byte(`user3`),
+		[]byte(`another-user3@mail.com`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err = client.ZAddAt(
+		context.TODO(),
+		[]byte(`age`), 25, []byte(`user1`), i1.Id,
+	); err != nil {
+		log.Fatal(err)
+	}
+	if _, err = client.ZAddAt(
+		context.TODO(),
+		[]byte(`age`), 36, []byte(`user2`), i2.Id,
+	); err != nil {
+		log.Fatal(err)
+	}
+	if _, err = client.ZAddAt(
+		context.TODO(),
+		[]byte(`age`), 36, []byte(`user3`), i3.Id,
+	); err != nil {
+		log.Fatal(err)
+	}
+	if _, err = client.ZAddAt(
+		context.TODO(),
+		[]byte(`age`), 54, []byte(`user3`), i4.Id,
+	); err != nil {
+		log.Fatal(err)
+	}
+
+	zscanOpts1 := &schema.ZScanRequest{
+		Set:      []byte(`age`),
+		SinceTx:  math.MaxUint64,
+		NoWait:   true,
+		MinScore: &schema.Score{Score: 36},
+	}
+
+	the36YearsOldList, err := client.ZScan(context.TODO(), zscanOpts1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	s, _ := json.MarshalIndent(the36YearsOldList, "", "\t")
+	fmt.Print(string(s))
+
+	oldestReq := &schema.ZScanRequest{
+		Set:       []byte(`age`),
+		SeekKey:   []byte{0xFF},
+		SeekScore: math.MaxFloat64,
+		SeekAtTx:  math.MaxUint64,
+		Limit:     1,
+		Desc:      true,
+		SinceTx:   math.MaxUint64,
+		NoWait:    true,
+	}
+
+	oldest, err := client.ZScan(context.TODO(), oldestReq)
+	if err != nil {
+		log.Fatal(err)
+	}
+	s, _ = json.MarshalIndent(oldest, "", "\t")
+	fmt.Print(string(s))
+}
+```
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -134,9 +255,10 @@ public class App {
 
 ```
 
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 var client = new ImmuClient();
@@ -175,9 +297,11 @@ Console.WriteLine(zScan1.Count);
 await client.Close();
 ```
 
-:::
+</TabItem>
 
-::: tab Python
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 
@@ -207,9 +331,11 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
 
-::: tab Node.js
+</TabItem>
+
+
+<TabItem value="node.js" label="Node.js">
 
 ```ts
 import ImmudbClient from 'immudb-node'
@@ -272,11 +398,13 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 })()
 ```
 
-:::
+</TabItem>
 
+<TabItem value="other" label="Others">
 
-::: tab Others
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
+
+
+</Tabs>

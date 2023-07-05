@@ -1,20 +1,56 @@
 # State management
 
-<WrappedSection>
-
 ## Current State
 
 Current state of immudb provides proof that clients can use to verify immudb:
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/state-current/main.go
-:::
+```go
+package main
 
-::: tab Python
+import (
+	"context"
+	"fmt"
+	"log"
+
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	state, err := client.CurrentState(context.TODO())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("current state is: %+v\n", state)
+}
+```
+
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 
@@ -36,9 +72,11 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
 
-::: tab Java
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 ImmuState currState = immuClient.currentState();
@@ -46,9 +84,10 @@ ImmuState currState = immuClient.currentState();
 System.out.printf("The current state is " + currState.toString());
 ```
 
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 var client = new ImmuClient();
@@ -60,9 +99,11 @@ System.Console.WriteLine($"The current state is: {state}");
 await client.Close();
 ```
 
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
+
 ```ts
 import ImmudbClient from 'immudb-node'
 
@@ -80,25 +121,26 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 	console.log('success: currentState', currentStateRes)
 })()
 ```
-:::
 
-::: tab Others
+</TabItem>
+
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<WrappedSection>
+</Tabs>
 
 ## Automated verification of state by immudb SDK
 
 It's the responsibility of the immudb client to track the server state. That way it can check each verified read or write operation against a trusted state.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
 The component in charge of state handling is the `StateService`.
 To set up the `stateService` 3 interfaces need to be implemented and provided to the `StateService` constructor:
 * `Cache` interface in the `cache` package. Standard cache.NewFileCache provides a file state store solution.
@@ -106,6 +148,7 @@ To set up the `stateService` 3 interfaces need to be implemented and provided to
 * `UUIDProvider` in the `stateService` package. It provides the immudb identifier. This is needed to allow the client to safely connect to multiple immudb instances. Standard UUIDProvider provides the immudb server identifier from a gRPC endpoint.
 
 Following an example how to obtain a client instance with a custom state service.
+
 ```go
 func MyCustomImmuClient(options *c.Options) (cli c.ImmuClient, err error) {
     ctx := context.Background()
@@ -155,9 +198,12 @@ func MyCustomImmuClient(options *c.Options) (cli c.ImmuClient, err error) {
     return cli, nil
 }
 ```
-:::
 
-::: tab Python
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 from immudb.client import PersistentRootService
@@ -184,9 +230,10 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
 
-::: tab Java
+</TabItem>
+
+<TabItem value="java" label="Java">
 
 Any immudb server has its own UUID. This is exposed as part of the login response.
 Java SDK can use any implementation of the `ImmuStateHolder` interface, which specifies two methods:
@@ -199,6 +246,7 @@ Currently, Java SDK offers two implementations of this interface for storing and
 - `SerializableImmuStateHolder` that uses an in-memory store.
 
 As most of the code snippets include `FileImmuStateHolder`, please find below an example using the in-memory alternative:
+
 ```java
 SerializableImmuStateHolder stateHolder = new SerializableImmuStateHolder();
 
@@ -214,9 +262,10 @@ immuClient.useDatabase("defaultdb");
 immuClient.logout();
 ```
 
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 Any immudb server has its own UUID. This is exposed as part of the login response.
 .NET SDK can use any implementation of the `ImmuStateHolder` interface, which specifies two methods:
@@ -244,29 +293,29 @@ await client.Close();
 
 ```
 
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Node.js sdk github project](https://github.com/codenotary/immudb-node/issues/new)
-:::
 
-::: tab Others
-If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
+</TabItem>
 
-::::
 
-<WrappedSection>
+<TabItem value="other" label="Others">
+
+If you're using another development langu
+
+</TabItem>
+
+</Tabs>
 
 ## Verify state signature
 
 If `immudb` is launched with a private signing key, each signed request can be verified with the public key.
 This ensures the server identity.
-
-</WrappedSection>
-
-<WrappedSection>
 
 To run immudb server with state signature use:
 
@@ -286,15 +335,72 @@ To generate the public key from the previous one:
 openssl ec -in private.key -pubout -out public.key
 ```
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/state-verify-signature/main.go
-:::
+```go
+package main
 
-::: tab Python
+import (
+	"context"
+	"fmt"
+	"log"
+
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithServerSigningPubKey("public.key").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	_, err = client.Login(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = client.Set(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`hello world`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	state, err := client.CurrentState(context.TODO())
+	if err != nil {
+		// if signature is not verified here is trigger an appropriate error
+		log.Fatal(err)
+	}
+
+	fmt.Print(state)
+}
+```
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 
@@ -324,9 +430,10 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
+</TabItem>
 
-::: tab Java
+
+<TabItem value="java" label="Java">
 
 ```java
 // Having immudb server running with state signature enabled
@@ -352,10 +459,9 @@ try {
     // State signature failed.
 }
 ```
+</TabItem>
 
-:::
-
-::: tab .NET
+<TabItem value="net" label=".NET">
 
 ```csharp
 // Having immudb server running with state signature enabled
@@ -393,10 +499,11 @@ catch (Exception e)
     return;
 }
 ```
+</TabItem>
 
-:::
 
-::: tab Node.js
+<TabItem value="node.js" label="Node.js">
+
 ```ts
 import ImmudbClient from 'immudb-node'
 
@@ -415,12 +522,14 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 	console.log('success: currentState', currentStateRes)
 })()
 ```
-:::
 
-::: tab Others
+</TabItem>
+
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<br/>
+</Tabs>

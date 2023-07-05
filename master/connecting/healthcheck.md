@@ -6,13 +6,49 @@ HealthCheck return an error if `immudb` status is not ok.
 
 </WrappedSection>
 
-:::: tabs
+<Tabs groupId="languages">
 
-::: tab Go
-<<< @/src/code-examples/go/connect-healthcheck/main.go
-:::
+<TabItem value="go" label="Go" default>
 
-::: tab Java
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	err = client.HealthCheck(context.TODO())
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+```
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -40,9 +76,10 @@ public class App {
 }
 ```
 
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 The following code snippets show how to invoke the healthcheck endpoint:
 
@@ -54,9 +91,10 @@ The following code snippets show how to invoke the healthcheck endpoint:
     Console.WriteLine(result);
 ```
 
-:::
+</TabItem>
 
-::: tab Python
+
+<TabItem value="python" label="Python">
 ```python
 from immudb import ImmudbClient
 
@@ -74,9 +112,10 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
 ```ts
 import ImmudbClient from 'immudb-node'
 
@@ -93,10 +132,12 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 	await cl.health()
 })()
 ```
-:::
+</TabItem>
 
-::: tab Others
+
+<TabItem value="other" label="Others">
 If you're using another development language, please refer to the [immugw](immugw.md) option.
-:::
+</TabItem>
 
-::::
+
+</Tabs>

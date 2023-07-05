@@ -1,7 +1,5 @@
 # Pgsql protocol compatibility
 
-<WrappedSection>
-
 immudb can talk the [pgsql wire protocol](https://www.postgresql.org/docs/9.3/protocol.html) which makes it compatible with a widely available set of clients and drivers.
 
 Note: immudb supports the pgsql wire protocol. It is *not* compatible with the SQL dialect. Check other topics in the `Develop with SQL` section to see what queries and operations are supported.
@@ -12,70 +10,69 @@ immudb needs to be started with the `pgsql-server` option enabled (`IMMUDB_PGSQL
 
 SSL is supported, if you configured immudb with a certificate.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="cli" label="CLI">
 
-::: tab CLI
 Use the [psql client](https://www.postgresql.org/docs/13/app-psql.html) included with PostgreSQL.
-:::
 
-::: tab C
+</TabItem>
+
+<TabItem value="c" label="C">
 
 You can use a subset of the [libpq](https://www.postgresql.org/docs/9.5/libpq.html) API. You will need to include:
 
-``` C
+```C
  #include <libpq-fe.h>
 ```
 
 and compile with `gcc -o main $(pkg-config libpq --cflags --libs) main.c`.
 
-:::
+</TabItem>
 
-::: tab Ruby
+<TabItem value="ruby" label="Ruby">
 
 You can use the [pg](https://rubygems.org/gems/pg) gem:
 
 ```ruby
 require 'pg'
 ```
-:::
+</TabItem>
 
-::: tab Java
+<TabItem value="java" label="Java">
 
 Download the official [JDBC driver](https://jdbc.postgresql.org/) jar artifact for PostgreSQL.
 
 You can then compile your program:
 
-```
+```java
 $ javac -cp .:./postgresql-42.2.20.jar MyProgram.java
 ```
+</TabItem>
 
-:::
 
-::: tab PHP
+<TabItem value="php" label="PHP">
 
 Please refer to the [PHP pgsql module](https://www.php.net/manual/en/book.pgsql.php) documentation for instructions on how to enable it in your server.
 
-:::
+</TabItem>
 
-::::
+</Tabs>
 
 ### To connect to the database:
 
-:::: tabs
+<Tabs groupId="languages">
 
-::: tab CLI
+<TabItem value="cli" label="CLI">
 
-```
+```sql
 psql "host=localhost dbname=defaultdb user=immudb password=immudb sslmode=disable"
 psql (13.2, server 0.0.0)
 Type "help" for help.
 ```
+</TabItem>
 
-:::
-
-::: tab C
+<TabItem value="c" label="C">
 
 ```C
 PGconn *conn = PQconnectdb("host=localhost user=immudb password=immudb dbname=defaultdb sslmode=disable");
@@ -87,15 +84,16 @@ if (PQstatus(conn) == CONNECTION_BAD) {
 }
 ```
 
-:::
+</TabItem>
 
-::: tab Ruby
+<TabItem value="ruby" label="Ruby">
+
 ```ruby
 conn = PG::Connection.open("sslmode=allow dbname=defaultdb user=immudb password=immudb host=127.0.0.1 port=5432")
 ```
-:::
+</TabItem>
 
-::: tab Java
+<TabItem value="java" label="Java">
 
 It is important to pass the `preferQueryMode=simple` option, as immudb pgsql server only support simple query mode.
 
@@ -105,10 +103,10 @@ Connection conn =
     "immudb", "immudb");
 System.out.println("Opened database successfully");
 ```
-:::
+</TabItem>
 
+<TabItem value="php" label="PHP">
 
-::: tab PHP
 ```php
 <?php
 $dbconn = pg_connect("host=localhost port=5432 sslmode=require user=immudb dbname=defaultdb password=immudb");
@@ -116,24 +114,28 @@ $dbconn = pg_connect("host=localhost port=5432 sslmode=require user=immudb dbnam
 pg_close($dbconn);
 ?>
 ```
-:::
 
-::::
+</TabItem>
+
+</Tabs>
 
 ### Execute statements:
 
-:::: tabs
+<Tabs groupId="languages">
 
-::: tab CLI
-```
+<TabItem value="cli" label="CLI">
+
+```sql
 defaultdb=> CREATE TABLE Orders(id INTEGER, amount INTEGER, title VARCHAR, PRIMARY KEY id);
 SELECT 1
 defaultdb=> UPSERT INTO Orders (id, amount, title) VALUES (1, 200, 'title1');
 SELECT 1
 ```
-:::
+</TabItem>
 
-::: tab C
+
+<TabItem value="c" label="C">
+
 ```C
 PGresult *res = PQexec(conn, "CREATE TABLE Orders (id INTEGER, amount INTEGER, title VARCHAR, PRIMARY KEY id)");
 if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -147,17 +149,22 @@ if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 }
 PQclear(res);
 ```
-:::
 
-::: tab Ruby
+</TabItem>
+
+
+<TabItem value="ruby" label="Ruby">
+
 ```ruby
 conn.exec( "CREATE TABLE Orders (id INTEGER, amount INTEGER, title VARCHAR, PRIMARY KEY id)" )
 conn.exec( "UPSERT INTO Orders (id, amount, title) VALUES (1, 200, 'title 1')" )
 conn.exec( "UPSERT INTO Orders (id, amount, title) VALUES (2, 400, 'title 2')" )
 ```
-:::
 
-::: tab Java
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 Statement stmt = conn.createStatement();
@@ -167,9 +174,11 @@ stmt.executeUpdate("CREATE TABLE people(id INTEGER, name VARCHAR, salary INTEGER
 stmt.executeUpdate("INSERT INTO people(id, name, salary) VALUES (1, 'Joe', 20000);");
 stmt.executeUpdate("INSERT INTO people(id, name, salary) VALUES (2, 'Bob', 30000);");
 ```
-:::
 
-::: tab PHP
+</TabItem>
+
+
+<TabItem value="php" label="PHP">
 
 ```php
 $stmt = 'CREATE TABLE people(id INTEGER, name VARCHAR, salary INTEGER, PRIMARY KEY id);';
@@ -178,26 +187,31 @@ $stmt = 'INSERT INTO people(id, name, salary) VALUES (1, 'Joe', 20000);';
 $result = pg_query($stmt) or die('Error message: ' . pg_last_error());
 $stmt = 'INSERT INTO people(id, name, salary) VALUES (2, 'Bob', 30000);';
 ```
-:::
 
-::::
+</TabItem>
+
+</Tabs>
 
 
 ### Query and iterate over results:
 
-:::: tabs
+<Tabs groupId="languages">
 
-::: tab CLI
-```
+<TabItem value="cli" label="CLI">
+
+```sql
 defaultdb=> SELECT id, amount, title FROM Orders;
  (defaultdb.Orders.id) | (defaultdb.Orders.amount) | (defaultdb.Orders.title)
 -----------------------+---------------------------+--------------------------
                      1 |                       200 | "title1"
 (1 row)
 ```
-:::
 
-::: tab C
+</TabItem>
+
+
+<TabItem value="c" label="C">
+
 ```C
 res = PQexec(conn, "SELECT id, amount, title FROM Orders");
 if (PQresultStatus(res) != PGRES_TUPLES_OK) {
@@ -214,9 +228,12 @@ for(int i=0; i<rows; i++) {
 PQclear(res);
 PQfinish(conn);
 ```
-:::
 
-::: tab Ruby
+</TabItem>
+
+
+<TabItem value="ruby" label="Ruby">
+
 ```ruby
 conn.exec( "SELECT id, amount, title FROM Orders" ) do |result|
   result.each do |row|
@@ -224,9 +241,11 @@ conn.exec( "SELECT id, amount, title FROM Orders" ) do |result|
   end
 end
 ```
-:::
 
-::: tab Java
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 ResultSet rs = stmt.executeQuery("SELECT * FROM people");
@@ -238,9 +257,11 @@ while(rs.next()){
     System.out.println();
 }
 ```
-:::
+</TabItem>
 
-::: tab PHP
+
+<TabItem value="php" label="PHP">
+
 ```php
 $query = 'SELECT * FROM people';
 $result = pg_query($query) or die('Error message: ' . pg_last_error());
@@ -248,6 +269,6 @@ while ($row = pg_fetch_row($result)) {
   var_dump($row);  
 }
 ```
-:::
+</TabItem>
 
-::::
+</Tabs>

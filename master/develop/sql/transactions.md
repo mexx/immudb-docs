@@ -4,8 +4,6 @@
 Examples in multiple languages can be found at following links: [immudb SDKs examples](https://github.com/codenotary/immudb-client-examples)
 :::
 
-<WrappedSection>
-
 immudb supports transactions both on key-value and SQL level, but interactive transactions are supported only on SQL with the exception of `execAll` method, that provides some additional properties.
 
 Interactive transactions are a way to execute multiple SQL statements in a single transaction. This makes possible to delegate application logic to SQL statements - a very common use case is for example checking if the balance > 0 before making a purchase.
@@ -25,15 +23,76 @@ To commit a transaction, you must call the `Commit()` method.
 
 **Note**: At the moment immudb support only 1 read-write transaction at a time, so it's up the application to ensure that only one read-write transaction is open at a time, or to handle read conflict error. In such case the error code returned by sdk will be `25P02` **CodInFailedSqlTransaction**.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-sql-transactions/main.go
-:::
+```go
+package main
 
-::: tab Java
+import (
+	"context"
+	"fmt"
+	"log"
+
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	tx1, err := client.NewTx(context.TODO())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = tx1.SQLExec(
+		context.TODO(),
+		`CREATE TABLE table1(id INTEGER, PRIMARY KEY id);`,
+		nil,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = tx1.SQLExec(
+		context.TODO(),
+		"INSERT INTO table1(id) VALUES (1234)",
+		nil,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	txh, err := tx1.Commit(context.TODO())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Successfully committed rows %d\n", txh.UpdatedRows)
+}
+```
+
+</TabItem>
+
+
+<TabItem value="java" label="Java">
+
 ```java
 package io.codenotary.immudb.helloworld;
 
@@ -98,14 +157,14 @@ public class App {
                 }
             }
         }
-
     }
-
 }
 ```
-:::
 
-::: tab Python
+</TabItem>
+
+
+<TabItem value="python" label="Python">
 
 Currently immudb Python sdk doesn't support interactive transactions.
 
@@ -196,20 +255,30 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
 
-::: tab Node.js
+</TabItem>
+
+
+<TabItem value="node.js" label="Node.js">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Node.js sdk github project](https://github.com/codenotary/immudb-node/issues/new)
-:::
 
-::: tab .NET
+</TabItem>
+
+
+<TabItem value="net" label=".NET">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [.Net sdk github project](https://github.com/codenotary/immudb4net/issues/new)
-:::
 
-::: tab Others
+</TabItem>
+
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the [immugw](/connecting/immugw.md) option.
-:::
 
-::::
+</TabItem>
+
+</Tabs>

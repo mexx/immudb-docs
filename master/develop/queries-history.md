@@ -1,7 +1,5 @@
 # Queries and history
 
-<WrappedSection>
-
 The fundamental property of immudb is that it's an append-only database.
 This means that an _update_ does not change an existing record. Instead, it is a new insert of the **same key** with a **new value**.
 It's possible to retrieve all the values for a particular key with the history command.
@@ -14,15 +12,77 @@ It's possible to retrieve all the values for a particular key with the history c
 * `Desc`: items are returned in reverse order. Optional
 * `SinceTx`: immudb will wait that the transaction specified by SinceTx is processed. Optional
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-history/main.go
-:::
+```go
+package main
 
-::: tab Java
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/codenotary/immudb/pkg/api/schema"
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	_, err = client.Set(
+		context.TODO(),
+		[]byte(`hello`),
+		[]byte(`immutable world`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = client.Set(
+		context.TODO(),
+		[]byte(`hello`),
+		[]byte(`immudb`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	req := &schema.HistoryRequest{
+		Key: []byte(`hello`),
+	}
+
+	ret, err := client.History(context.TODO(), req)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf(
+		"Successfully retrieved %d entries for key %s\n",
+		len(ret.GetEntries()),
+		req.Key,
+	)
+}
+```
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -91,9 +151,10 @@ public class App {
 ```
 Note that, similar with many other methods, `history` method is overloaded to allow different kinds/set of parameters.
 
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 
@@ -119,9 +180,10 @@ await client.Close();
 ```
 Note that, similar with many other methods, `history` method is overloaded to allow different kinds/set of parameters.
 
-:::
+</TabItem>
 
-::: tab Python
+
+<TabItem value="python" label="Python">
 
 Python immudb sdk currently doesn't support `SinceTx` parameter
 
@@ -155,9 +217,11 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
+
 ```ts
 import ImmudbClient from 'immudb-node'
 import Parameters from 'immudb-node/types/parameters'
@@ -184,60 +248,75 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 	console.log('success: history', historyRes)
 })()
 ```
-:::
 
-::: tab Others
+</TabItem>
+
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
+
+
+</Tabs>
 
 <br/>
-
-<WrappedSection>
 
 ## Counting
 
 Counting entries is not supported at the moment.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Go sdk github project](https://github.com/codenotary/immudb/issues/new)
-:::
 
-::: tab Java
+</TabItem>
+
+
+<TabItem value="java" label="Java">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Java sdk github project](https://github.com/codenotary/immudb4j/issues/new)
-:::
 
-::: tab Python
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Python sdk github project](https://github.com/codenotary/immudb-py/issues/new)
-:::
 
-::: tab Node.js
+</TabItem>
+
+
+<TabItem value="node.js" label="Node.js">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Node.js sdk github project](https://github.com/codenotary/immudb-node/issues/new)
-:::
 
-::: tab .NET
+</TabItem>
+
+
+<TabItem value="net" label=".NET">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [.Net sdk github project](https://github.com/codenotary/immudb4net/issues/new)
-:::
 
-::: tab Others
+</TabItem>
+
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<br/>
+</Tabs>
 
-<WrappedSection>
 
 ## Scan
 
@@ -253,18 +332,96 @@ The `scan` command is used to iterate over the collection of elements present in
 
 To gain speed it's possible to specify `noWait=true`. The control will be returned to the caller immediately, without waiting for the indexing to complete. When `noWait` is used, keep in mind that the returned data may not be yet up to date with the inserted data, as the indexing might not have completed.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
-
-::: tab Go
+<TabItem value="go" label="Go" default>
 
 An ordinary `scan` command and a reversed one.
 
-<<< @/src/code-examples/go/develop-kv-scan/main.go
-:::
+```go
+package main
 
-::: tab Java
+import (
+	"context"
+	"fmt"
+	"log"
+	"math"
+
+	"github.com/codenotary/immudb/pkg/api/schema"
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	_, err = client.Set(context.TODO(), []byte(`aaa`), []byte(`item1`))
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = client.Set(context.TODO(), []byte(`bbb`), []byte(`item2`))
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = client.Set(context.TODO(), []byte(`abc`), []byte(`item3`))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	scanReq := &schema.ScanRequest{
+		Prefix: []byte(`a`),
+	}
+
+	list, err := client.Scan(context.TODO(), scanReq)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%v\n", list)
+	scanReq1 := &schema.ScanRequest{
+		SeekKey: []byte{0xFF},
+		Prefix:  []byte(`a`),
+		Desc:    true,
+	}
+
+	list, err = client.Scan(context.TODO(), scanReq1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%v\n", list)
+
+	// scan on all key  values on the current database,
+	// with a fresh snapshot
+	scanReq2 := &schema.ScanRequest{
+		SeekKey: []byte{0xFF},
+		Desc:    true,
+		SinceTx: math.MaxUint64,
+	}
+
+	list, err = client.Scan(context.TODO(), scanReq2)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%v\n", list)
+}
+```
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -336,9 +493,10 @@ public class App {
 
 `scan` is an overloaded method, therefore multiple flavours of it with different parameter options exist.
 
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 var client = new ImmuClient();
@@ -365,9 +523,11 @@ await client.Close();
 
 `scan` is an overloaded method, therefore multiple flavours of it with different parameter options exist.
 
-:::
+</TabItem>
 
-::: tab Python
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 
@@ -407,9 +567,12 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
 
-::: tab Node.js
+</TabItem>
+
+
+<TabItem value="node.js" label="Node.js">
+
 ```ts
 import ImmudbClient from 'immudb-node'
 import Parameters from 'immudb-node/types/parameters'
@@ -446,6 +609,7 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 	const scanRes1 = await cl.scan(scanReq1)
 	console.log('success: scan', scanRes1)
 })()
+
 ```
 
 Example with an offset:
@@ -499,17 +663,17 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 	console.log('success: scan', scanRes2)
 })()
 ```
-:::
+</TabItem>
 
-::: tab Others
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<br/>
 
-<WrappedSection>
+</Tabs>
 
 ## References
 
@@ -517,19 +681,130 @@ If you're using another development language, please refer to the <a href="/conn
 As a consequence, when we retrieve that reference with a `Get` or `VerifiedGet` the value retrieved will be the original value associated with the original key.
 Its ```VerifiedReference``` counterpart is the same except that it also produces the inclusion and consistency proofs.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-references/main.go
+```go
+package main
 
-Example with verifications
+import (
+	"context"
+	"fmt"
+	"log"
 
-<<< @/src/code-examples/go/develop-kv-references-verified/main.go
-:::
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
 
-::: tab Java
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	_, err = client.Set(
+		context.TODO(),
+		[]byte(`firstKey`),
+		[]byte(`firstValue`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	reference, err := client.SetReference(
+		context.TODO(),
+		[]byte(`myTag`),
+		[]byte(`firstKey`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%v\n", reference)
+	firstItem, err := client.Get(
+		context.TODO(),
+		[]byte(`myTag`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%v\n", firstItem)
+}
+```
+**Example with verifications**
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	_, err = client.Set(
+		context.TODO(),
+		[]byte(`secondKey`),
+		[]byte(`secondValue`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	reference, err := client.VerifiedSetReference(
+		context.TODO(),
+		[]byte(`mySecondTag`),
+		[]byte(`secondKey`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%v\n", reference)
+
+	secondItem, err := client.Get(
+		context.TODO(),
+		[]byte(`mySecondTag`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%v\n", secondItem)
+}
+```
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -593,9 +868,10 @@ public class App {
 }
 
 ```
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 var client = new ImmuClient();
@@ -642,9 +918,11 @@ catch (CorruptedDataException e)
 await client.Close();
 ```
 
-:::
+</TabItem>
 
-::: tab Python
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 
@@ -688,9 +966,12 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
 
-::: tab Node.js
+</TabItem>
+
+
+<TabItem value="node.js" label="Node.js">
+
 ```ts
 import ImmudbClient from 'immudb-node'
 import Parameters from 'immudb-node/types/parameters'
@@ -724,6 +1005,7 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 	const getRes = await cl.get(getReq)
 	console.log('success: get by reference', getRes)
 })()
+
 ```
 
 Example with verifications
@@ -762,30 +1044,96 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 	console.log('success: get by reference', getRes)
 })()
 ```
-:::
+</TabItem>
 
 
-::: tab Others
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<WrappedSection>
+</Tabs>
 
 ### GetReference and VerifiedGetReference
 
 When reference is resolved with get or verifiedGet in case of multiples equals references the last reference is returned.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-references-get/main.go
-:::
+```go 
+package main
 
-::: tab Java
+import (
+	"context"
+	"fmt"
+	"log"
+
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	_, err = client.Set(
+		context.TODO(),
+		[]byte(`secondKey`),
+		[]byte(`secondValue`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = client.Set(
+		context.TODO(),
+		[]byte(`secondKey`),
+		[]byte(`thirdValue`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	reference, err := client.VerifiedSetReference(
+		context.TODO(),
+		[]byte(`myThirdTag`),
+		[]byte(`secondKey`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%v\n", reference)
+
+	thirdItem, err := client.Get(
+		context.TODO(),
+		[]byte(`myThirdTag`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%v\n", thirdItem)
+}
+```
+
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -851,9 +1199,11 @@ public class App {
 }
 ```
 
-:::
+</TabItem>
 
-::: tab Python
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 
@@ -897,9 +1247,11 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
+
 ```ts
 import ImmudbClient from 'immudb-node'
 import Parameters from 'immudb-node/types/parameters'
@@ -943,10 +1295,12 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 	console.log('success: get by second reference', getSecondItemRes)
 })()
 ```
-:::
+
+</TabItem>
 
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 
@@ -973,29 +1327,96 @@ class Program
 
 ```
 
-:::
+</TabItem>
 
-::: tab Others
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<WrappedSection>
+</Tabs>
 
 ### Resolving reference with transaction id
 
 It's possible to bind a reference to a key on a specific transaction using `SetReferenceAt` and `VerifiedSetReferenceAt`
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-references-txid/main.go
-:::
+```go
+package main
 
-::: tab Java
+import (
+	"context"
+	"fmt"
+	"log"
+
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	meta, err := client.Set(
+		context.TODO(),
+		[]byte(`secondKey`),
+		[]byte(`secondValue`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = client.Set(
+		context.TODO(),
+		[]byte(`secondKey`),
+		[]byte(`thirdValue`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	reference, err := client.VerifiedSetReferenceAt(
+		context.TODO(),
+		[]byte(`myThirdTag`),
+		[]byte(`secondKey`),
+		meta.Id,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%v\n", reference)
+
+	thirdItem, err := client.Get(
+		context.TODO(),
+		[]byte(`myThirdTag`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%v\n", thirdItem)
+}
+```
+
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -1063,9 +1484,10 @@ public class App {
 
 ```
 
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 
@@ -1113,14 +1535,19 @@ catch (CorruptedDataException e)
 await client.Close();
 ```
 
-:::
+</TabItem>
 
-::: tab Python
+
+<TabItem value="python" label="Python">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Python sdk github project](https://github.com/codenotary/immudb-py/issues/new)
-:::
 
-::: tab Node.js
+</TabItem>
+
+
+<TabItem value="node.js" label="Node.js">
+
 ```ts
 import ImmudbClient from 'immudb-node'
 import Parameters from 'immudb-node/types/parameters'
@@ -1150,10 +1577,14 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 	console.log('success: get second item by reference', getSecondItemRes)
 })()
 ```
-:::
 
-::: tab Others
+</TabItem>
+
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
+
+</Tabs>

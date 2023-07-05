@@ -1,7 +1,5 @@
 # Index cleaning
 
-<WrappedSection>
-
 Maintaining a healthy disk usage is crucial. immudb has two operations operations aiming to remove unreferenced data from the index.
 A full index clean-up is achieved by calling `CompactIndex`, which is a routine that creates a fresh index based on the current state, removing all intermediate data generated over time. 
 The index is generated asynchronously, so new transactions may take place while it is created. As a result, if the server is constantly overloaded, there will likely be blocking times when the newly compacted index replaces the current one.
@@ -10,15 +8,60 @@ In the case of continuous load on the server, the `FlushIndex` operation may be 
 
 Partial compaction may be triggered automatically by immudb. Database settings can be modified to set the `cleanupPercentage` attribute to non-zero in order to accomplish this.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/maintenance-index/main.go
-:::
+```go
+package main
 
-::: tab Java
+import (
+	"context"
+	"log"
+
+	immudb "github.com/codenotary/immudb/pkg/client"
+	"google.golang.org/protobuf/types/known/emptypb"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	// partial index cleanup
+	_, err = client.FlushIndex(
+		context.TODO(),
+		0.1,   // Cleanup percentage, this % of index nodes data will be scanned for unreferenced data
+		false, // if true, fsync after writing data to avoid index regeneration in the case of an unexpected crash
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// full async index cleanup
+	err = client.CompactIndex(context.TODO(), &emptypb.Empty{})
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+```
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -49,9 +92,10 @@ public class App {
 
 }
 ```
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 
@@ -64,25 +108,32 @@ await client.Close();
 
 ```
 
-:::
+</TabItem>
 
-::: tab Python
+
+<TabItem value="python" label="Python">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Python sdk github project](https://github.com/codenotary/immudb-py/issues/new)
-:::
 
-::: tab Node.js
+</TabItem>
+
+
+<TabItem value="node.js" label="Node.js">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Node.js sdk github project](https://github.com/codenotary/immudb-node/issues/new)
-:::
 
-::: tab Others
+</TabItem>
+
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<WrappedSection>
+</Tabs>
 
 ## How indexing works
 
@@ -98,11 +149,7 @@ After some time, several snapshots may be created (specified by flushAfter prope
 While the clean process is made, no data is indexed and there will be an extra disk space requirement due to the new dump. Once completed, a considerable disk space will be reduced by removing the previously indexed data (older snapshots).
 The btree and clean up process is something specific to indexing. And will not lock transaction processing as indexing is asynchronously generated.
 
-</WrappedSection>
-
-<WrappedSection>
-
-## compactor tool
+## Compactor tool
 
 To manage index compaction, you can use the [compactor](https://github.com/codenotary/immudb-tools/tree/main/compactor) tool,
 part of the [immudb-tools](https://github.com/codenotary/immudb-tools) repository.
@@ -136,5 +183,3 @@ The advantage is that you have control on the time when compaction is performed,
 All indexes are rebuilt. Very resource intensive, but it gives you the most compact representation of indexes.
 
 You can get more information in the [README](https://github.com/codenotary/immudb-tools/tree/main/compactor)
-
-</WrappedSection>

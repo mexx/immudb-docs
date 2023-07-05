@@ -4,30 +4,119 @@
 Examples in multiple languages can be found at following links: [immudb SDKs examples](https://github.com/codenotary/immudb-client-examples)
 :::
 
-<WrappedSection>
-
 Most of the methods in SDKs have `Verified` equivalent, i.e. `Get` and `VerifiedGet`. The only difference is that with `Verified` methods proofs needed to mathematically verify that the data was not tampered are returned by the server and the verification is done automatically by SDKs. 
 Note that generating that proof has a slight performance impact, so primitives are allowed without the proof.
 It is still possible to get the proofs for a specific item at any time, so the decision about when or how frequently to do checks (with the Verify version of a method) is completely up to the user.
 It's possible also to use dedicated [auditors](/production/auditor.md) to ensure the database consistency, but the pattern in which every client is also an auditor is the more interesting one.
 
-</WrappedSection>
-
-<WrappedSection>
-
 ## Get and Set
 
 `Get`/`VerifiedGet` and `Set`/`VerifiedSet` methods allow for basic operations on a Key Value level. In addition, `GetAll` and `SetAll` methods allow for adding and reading in a single transaction. See [transactions chapter](transactions.md) for more details.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-get-set/main.go
-:::
+```go
+package main
 
-::: tab Python
+import (
+	"context"
+	"log"
+
+	"github.com/codenotary/immudb/pkg/api/schema"
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	// Without verification
+	tx, err := client.Set(
+		context.TODO(),
+		[]byte(`x`),
+		[]byte(`y`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Set: tx: %d", tx.Id)
+
+	entry, err := client.Get(
+		context.TODO(),
+		[]byte(`x`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Get: %v", entry)
+
+	tx, err = client.SetAll(context.TODO(), &schema.SetRequest{
+		KVs: []*schema.KeyValue{
+			{Key: []byte(`1`), Value: []byte(`test1`)},
+			{Key: []byte(`2`), Value: []byte(`test2`)},
+			{Key: []byte(`3`), Value: []byte(`test3`)},
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("SetAll: tx: %d", tx.Id)
+
+	entries, err := client.GetAll(
+		context.TODO(),
+		[][]byte{
+			[]byte(`1`),
+			[]byte(`2`),
+			[]byte(`3`),
+		},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("GetAll: %+v", entries)
+
+	// With verification
+	tx, err = client.VerifiedSet(
+		context.TODO(),
+		[]byte(`xx`),
+		[]byte(`yy`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("VerifiedSet: tx: %d", tx.Id)
+
+	entry, err = client.Get(
+		context.TODO(),
+		[]byte(`xx`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("VerifiedGet: %v", entry)
+}
+```
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 import json
@@ -101,9 +190,10 @@ if __name__ == "__main__":
     main()
 ```
 
-:::
+</TabItem>
 
-::: tab Java
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -164,9 +254,10 @@ Note that `value` is a primitive byte array. You can set the value of a String u
 
 Also, `set` method is overloaded to allow receiving the `key` parameter as a `byte[]` data type.
 
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 var client = new ImmuClient();
@@ -178,9 +269,10 @@ string v = await client.Get("k123").ToString();
 await client.Close();
 ```
 
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
 
 ```ts
 import ImmudbClient from 'immudb-node'
@@ -206,29 +298,151 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 })()
 ```
 
-:::
+</TabItem>
 
-::: tab Others
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<WrappedSection>
+
+</Tabs>
 
 ## Get at and since a transaction
 
 You can retrieve a key on a specific transaction with `GetAt`/`VerifiedGetAt`. If you need to check the last value of a key after given transaction (which represent state of the indexer), you can use `GetSince`/`VerifiedGetSince`.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-get-at-since/main.go
-:::
+```go
+package main
 
-::: tab Python
+import (
+	"context"
+	"log"
+
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	key := []byte(`123123`)
+	var txIDs []uint64
+	for _, v := range [][]byte{
+		[]byte(`111`),
+		[]byte(`222`),
+		[]byte(`333`),
+	} {
+		txID, err := client.Set(
+			context.TODO(),
+			key,
+			v,
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+		txIDs = append(txIDs, txID.Id)
+	}
+
+	otherTxID, err := client.Set(
+		context.TODO(),
+		[]byte(`other`),
+		[]byte(`other`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Without verification
+	entry, err := client.GetSince(
+		context.TODO(),
+		key,
+		txIDs[0],
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("GetSince first: %+v", entry)
+
+	// With verification
+	entry, err = client.VerifiedGetSince(
+		context.TODO(),
+		key,
+		txIDs[0]+1,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("VerifiedGetSince second: %+v", entry)
+
+	// GetAt txID after inserting other data
+	_, err = client.GetAt(
+		context.TODO(),
+		key,
+		otherTxID.Id,
+	)
+	if err == nil {
+		log.Fatalf("This should not happen, %+v", entry)
+	}
+
+	// Without verification
+	entry, err = client.GetAt(
+		context.TODO(),
+		key,
+		txIDs[1],
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("GetAt second: %+v", entry)
+
+	// With verification
+	entry, err = client.VerifiedGetAt(
+		context.TODO(),
+		key,
+		txIDs[2],
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("VerifiedGetAt third: %+v", entry)
+
+	// VerifiedGetAt txID after inserting other data
+	entry, err = client.VerifiedGetAt(
+		context.TODO(),
+		key,
+		otherTxID.Id,
+	)
+	if err == nil {
+		log.Fatalf("This should not happen, %+v", entry)
+	}
+}
+
+```
+</TabItem>
+
+
+<TabItem value="python" label="Python">
 
 ```python
 from grpc import RpcError
@@ -289,9 +503,10 @@ if __name__ == "__main__":
     main()
 
 ```
-:::
+</TabItem>
 
-::: tab Java
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -352,9 +567,10 @@ public class App {
 }
 ```
 
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 var client = new ImmuClient();
@@ -369,9 +585,10 @@ Console.WriteLine(e.ToString());
 
 ```
 
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
 
 ```ts
 import ImmudbClient from 'immudb-node'
@@ -408,15 +625,16 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 })()
 ```
 
-:::
+</TabItem>
 
-::: tab Others
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<WrappedSection>
+</Tabs>
 
 ## Get at revision
 
@@ -427,20 +645,83 @@ a new sequential revision number assignment.
 A negative revision number can also be specified which means the nth historical value,
 e.g. -1 is the previous value, -2 is the one before and so on.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-get-at-revision/main.go
-:::
+```go
+package main
 
-::: tab Python
+import (
+	"context"
+	"log"
+
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	// Use dedicated API call
+	entry, err := client.GetAtRevision(
+		context.TODO(),
+		[]byte("key"),
+		-1,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf(
+		"Retrieved entry at revision %d: %s",
+		entry.Revision,
+		string(entry.Value),
+	)
+
+	// Use additional get option
+	entry, err = client.Get(
+		context.TODO(),
+		[]byte("key"),
+		immudb.AtRevision(-2),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf(
+		"Retrieved entry at revision %d: %s",
+		entry.Revision,
+		string(entry.Value),
+	)
+}
+```
+
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Python sdk github project](https://github.com/codenotary/immudb-py/issues/new)
-:::
 
-::: tab Java
+</TabItem>
+
+
+<TabItem value="java" label="Java">
+
 ```java
 package io.codenotary.immudb.helloworld;
 
@@ -503,9 +784,10 @@ public class App {
 
 }
 ```
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ``` csharp
 var client = new ImmuClient();
@@ -531,34 +813,133 @@ catch (VerificationException e)
 await client.Close();
 ```
 
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Node.js sdk github project](https://github.com/codenotary/immudb-node/issues/new)
-:::
 
-::: tab Others
+</TabItem>
+
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<WrappedSection>
+
+</Tabs>
 
 ## Get at TXID
 
 It's possible to retrieve all the keys inside a specific transaction.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-get-at-txid/main.go
-:::
+```go
+package main
 
-::: tab Python
+import (
+	"context"
+	"log"
+
+	"github.com/codenotary/immudb/pkg/api/schema"
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	setTxFirst, err := client.SetAll(context.TODO(),
+		&schema.SetRequest{KVs: []*schema.KeyValue{
+			{Key: []byte("key1"), Value: []byte("val1")},
+			{Key: []byte("key2"), Value: []byte("val2")},
+		}})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("First txID: %d", setTxFirst.Id)
+
+	// Set keys in another transaction
+	setTxSecond, err := client.SetAll(
+		context.TODO(),
+		&schema.SetRequest{KVs: []*schema.KeyValue{
+			{Key: []byte("key1"), Value: []byte("val11")},
+			{Key: []byte("key2"), Value: []byte("val22")},
+		}})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Second txID: %d", setTxSecond.Id)
+
+	// Without verification
+	tx, err := client.TxByID(
+		context.TODO(),
+		setTxFirst.Id,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, entry := range tx.Entries {
+		item, err := client.GetAt(
+			context.TODO(),
+			entry.Key,
+			setTxFirst.Id,
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("retrieved: %+v", item)
+	}
+
+	// With verification
+	tx, err = client.VerifiedTxByID(
+		context.TODO(),
+		setTxSecond.Id,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, entry := range tx.Entries {
+		item, err := client.VerifiedGetAt(
+			context.TODO(),
+			entry.Key,
+			setTxSecond.Id,
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("retrieved: %+v", item)
+	}
+}
+```
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 
@@ -601,9 +982,11 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
 
-::: tab Java
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -677,9 +1060,10 @@ public class App {
 
 ```
 
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 
@@ -707,9 +1091,10 @@ catch (Exception e)
 await client.Close();
 ```
 
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
 
 ```ts
 import ImmudbClient from 'immudb-node'
@@ -732,15 +1117,17 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 })()
 ```
 
-:::
+</TabItem>
 
-::: tab Others
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<WrappedSection>
+
+</Tabs>
 
 ## Conditional writes
 
@@ -751,16 +1138,10 @@ It can be then used to ensure consistent state of data inside the database.
 Following preconditions are supported:
 
 * MustExist - precondition checks if given key exists in the database,
-  this precondition takes into consideration logical deletion and data expiration,
-  if the entry was logically deleted or has expired, MustExist precondition for
-  such entry will fail
+  this precondition takes into consideration logical deletion and data expiration, if the entry was logically deleted or has expired, MustExist precondition for such entry will fail
 * MustNotExist - precondition checks if given key does not exist in the database,
-  this precondition also takes into consideration logical deletion and data expiration,
-  if the entry was logically deleted or has expired, MustNotExist precondition for
-  such entry will succeed
-* NotModifiedAfterTX - precondition checks if given key was not modified after given transaction id,
-  local deletion and setting entry with expiration data is also considered modification of the
-  entry
+  this precondition also takes into consideration logical deletion and data expiration, if the entry was logically deleted or has expired, MustNotExist precondition for such entry will succeed
+* NotModifiedAfterTX - precondition checks if given key was not modified after  given transaction id, local deletion and setting entry with expiration data is also considered modification of the entry
 
 In many cases, keys used for constraints will be the same as keys for written entries.
 A good example here is a situation when a value is set only if that key does not exist.
@@ -776,40 +1157,162 @@ persisting the write and requires up-to-date index.
 
 Preconditions are available on `SetAll`, `Reference` and `ExecAll` operations.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
-
-::: tab Go
+<TabItem value="go" label="Go" default>
 
 In go sdk, the `schema` package contains convenient wrappers for creating constraint objects,
 such as `schema.PreconditionKeyMustNotExist`.
 
-<<< @/src/code-examples/go/develop-kv-preconditions/main.go
-:::
+```go
+package main
 
-::: tab Python
+import (
+	"context"
+	"log"
+
+	"github.com/codenotary/immudb/pkg/api/schema"
+	immudb "github.com/codenotary/immudb/pkg/client"
+	immuerrors "github.com/codenotary/immudb/pkg/client/errors"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	_, err = client.Set(context.TODO(), []byte("key"), []byte("value"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// ensure modification is done atomically when there are concurrent writers
+
+	entry, err := client.Get(context.TODO(), []byte("key"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = client.SetAll(
+		context.TODO(),
+		&schema.SetRequest{
+			KVs: []*schema.KeyValue{{
+				Key:   []byte("key"),
+				Value: []byte("value2"),
+			}},
+			Preconditions: []*schema.Precondition{
+				schema.PreconditionKeyNotModifiedAfterTX(
+					[]byte("key"),
+					entry.Tx,
+				),
+			},
+		},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// allow setting the key only once
+
+	_, err = client.SetAll(context.TODO(), &schema.SetRequest{
+		KVs: []*schema.KeyValue{
+			{Key: []byte("key-once"), Value: []byte("val")},
+		},
+		Preconditions: []*schema.Precondition{
+			schema.PreconditionKeyMustNotExist([]byte("key-once")),
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// set only one key in a group of keys
+
+	_, err = client.SetAll(context.TODO(), &schema.SetRequest{
+		KVs: []*schema.KeyValue{
+			{Key: []byte("key-group-1"), Value: []byte("val1")},
+		},
+		Preconditions: []*schema.Precondition{
+			schema.PreconditionKeyMustNotExist([]byte("key-group-2")),
+			schema.PreconditionKeyMustNotExist([]byte("key-group-3")),
+			schema.PreconditionKeyMustNotExist([]byte("key-group-4")),
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// check if returned error indicates precondition failure
+
+	_, err = client.SetAll(context.TODO(), &schema.SetRequest{
+		KVs: []*schema.KeyValue{
+			{Key: []byte("key-missing"), Value: []byte("val")},
+		},
+		Preconditions: []*schema.Precondition{
+			schema.PreconditionKeyMustExist([]byte("key-missing")),
+		},
+	})
+	immuErr := immuerrors.FromError(err)
+	if immuErr != nil &&
+		immuErr.Code() == immuerrors.CodIntegrityConstraintViolation {
+		log.Println("Constraint validation failed")
+	}
+
+}
+```
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Python sdk github project](https://github.com/codenotary/immudb-py/issues/new)
-:::
 
-::: tab Java
+</TabItem>
+
+
+<TabItem value="java" label="Java">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Java sdk github project](https://github.com/codenotary/immudb4j)
-:::
 
-::: tab .NET
+</TabItem>
+
+
+<TabItem value="net" label=".NET">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Java sdk github project](https://github.com/codenotary/immudb4j)
-:::
 
-::: tab Node.js
+</TabItem>
+
+
+<TabItem value="node.js" label="Node.js">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Node.js sdk github project](https://github.com/codenotary/immudb-node/issues/new)
-:::
 
-::: tab Others
+</TabItem>
+
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
+
+
+</Tabs>

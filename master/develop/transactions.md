@@ -1,21 +1,69 @@
 # Transactions
 
-<WrappedSection>
-
 `GetAll`, `SetAll` and `ExecAll` are the foundation of transactions at key value level in immudb. They allow the execution of a group of commands in a single step, with two important guarantees:
 
 * All the commands in a transaction are serialized and executed sequentially. No request issued by another client can ever interrupt the execution of a transaction. This guarantees that the commands are executed as a single isolated operation.
 * Either all of the commands are processed, or none are, so the transaction is also atomic.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-getall/main.go
-:::
+```go 
+package main
 
-::: tab Python
+import (
+	"context"
+	"log"
+
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	_, err = client.Set(context.TODO(), []byte(`key1`), []byte(`val1`))
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = client.Set(context.TODO(), []byte(`key2`), []byte(`val2`))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	itList, err := client.GetAll(context.TODO(), [][]byte{
+		[]byte("key1"),
+		[]byte("key2"),
+		[]byte("key3"), // does not exist, no value returned
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("Set: tx: %+v", itList)
+}
+```
+
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 
@@ -38,9 +86,11 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
 
-::: tab Java
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -104,9 +154,10 @@ public class App {
 }
 ```
 
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
 
 ```ts
 import ImmudbClient from 'immudb-node'
@@ -131,29 +182,72 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 })()
 ```
 
-:::
+</TabItem>
 
-::: tab Others
+
+<TabItem value="other" label="Others">
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
+</TabItem>
 
-::::
 
-<WrappedSection>
+</Tabs>
 
 ## SetAll
 
 A more versatile atomic multi set operation
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-setall/main.go
-:::
+```go
+package main
 
-::: tab Python
+import (
+	"context"
+	"log"
+
+	"github.com/codenotary/immudb/pkg/api/schema"
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	tx, err := client.SetAll(context.TODO(), &schema.SetRequest{
+		KVs: []*schema.KeyValue{
+			{Key: []byte(`1`), Value: []byte(`key1`)},
+			{Key: []byte(`2`), Value: []byte(`key2`)},
+			{Key: []byte(`3`), Value: []byte(`key3`)},
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("SetAll: tx: %d", tx.Id)
+}
+
+```
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 
@@ -179,9 +273,10 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
+</TabItem>
 
-::: tab Java
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -238,9 +333,10 @@ public class App {
 }
 ```
 
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
 
 ```ts
 import ImmudbClient from 'immudb-node'
@@ -267,15 +363,16 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 })()
 ```
 
-:::
+</TabItem>
 
-::: tab Others
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<WrappedSection>
+</Tabs>
 
 ## ExecAll
 
@@ -292,15 +389,103 @@ It's possible to persist and reference items that are already persisted on disk.
 * `Op_Ref`
   If `zAdd` or `reference` is not yet persisted on disk it's possible to add it as a regular key value and the reference is done only. In that case if `BoundRef` is true the reference is bounded to the current transaction values.
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-execall/main.go
-:::
+```go
+package main
 
-::: tab Python
+import (
+	"context"
+	"encoding/json"
+	"log"
+
+	"github.com/codenotary/immudb/pkg/api/schema"
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	idx, err := client.Set(
+		context.TODO(),
+		[]byte(`persistedKey`),
+		[]byte(`persistedVal`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	aOps := &schema.ExecAllRequest{
+		Operations: []*schema.Op{
+			{
+				Operation: &schema.Op_Kv{
+					Kv: &schema.KeyValue{
+						Key:   []byte(`notPersistedKey`),
+						Value: []byte(`notPersistedVal`),
+					},
+				},
+			},
+			{
+				Operation: &schema.Op_ZAdd{
+					ZAdd: &schema.ZAddRequest{
+						Set:   []byte(`mySet`),
+						Score: 0.4,
+						Key:   []byte(`notPersistedKey`)},
+				},
+			},
+			{
+				Operation: &schema.Op_ZAdd{
+					ZAdd: &schema.ZAddRequest{
+						Set:      []byte(`mySet`),
+						Score:    0.6,
+						Key:      []byte(`persistedKey`),
+						AtTx:     idx.Id,
+						BoundRef: true,
+					},
+				},
+			},
+		},
+	}
+
+	idx, err = client.ExecAll(context.TODO(), aOps)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	list, err := client.ZScan(context.TODO(), &schema.ZScanRequest{
+		Set:     []byte(`mySet`),
+		SinceTx: idx.Id,
+		NoWait:  true,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	s, _ := json.MarshalIndent(list, "", "\t")
+	log.Print(string(s))
+}
+```
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 ```python
 from immudb import ImmudbClient
 from immudb.datatypes import KeyValue, ZAddRequest, ReferenceRequest
@@ -330,16 +515,18 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
+</TabItem>
 
-::: tab Java
+
+<TabItem value="java" label="Java">
 
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Java sdk github project](https://github.com/codenotary/immudb4j/issues/new)
 
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
 
 ```ts
 import ImmudbClient from 'immudb-node'
@@ -388,15 +575,16 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 })()
 ```
 
-:::
+</TabItem>
 
-::: tab Others
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<WrappedSection>
+</Tabs>
 
 ## TxScan
 
@@ -408,24 +596,112 @@ The argument of a `TxScan` is an array of the following types:
 * `Limit`: number of transactions returned
 * `Desc`: order of returned transacations
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
+```go
+package main
 
-<<< @/src/code-examples/go/develop-kv-txscan/main.go
+import (
+	"context"
+	"log"
+
+	"github.com/codenotary/immudb/pkg/api/schema"
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	tx, err := client.Set(
+		context.TODO(),
+		[]byte("key1"),
+		[]byte("val1"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = client.Set(
+		context.TODO(),
+		[]byte("key2"),
+		[]byte("val2"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = client.Set(
+		context.TODO(),
+		[]byte("key3"),
+		[]byte("val3"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	txs, err := client.TxScan(context.TODO(), &schema.TxScanRequest{
+		InitialTx: tx.Id,
+		Limit:     3,
+		Desc:      true,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Then it's possible to retrieve entries of every transactions:
+	for _, tx := range txs.GetTxs() {
+		for _, entry := range tx.Entries {
+			item, err := client.GetAt(
+				context.TODO(),
+				entry.Key[1:],
+				tx.Header.Id,
+			)
+			if err != nil {
+				item, err = client.GetAt(
+					context.TODO(),
+					entry.Key,
+					tx.Header.Id,
+				)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			log.Printf("retrieved key %s and val %s\n", item.Key, item.Value)
+		}
+	}
+}
+```
 
 > Remember to strip the first byte in the key (key prefix).
 > Remember that a transaction could contain sorted sets keys that should not be skipped.
-:::
 
-::: tab Python
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Python sdk github project](https://github.com/codenotary/immudb-py/issues/new)
-:::
 
-::: tab Java
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -488,9 +764,10 @@ public class App {
 }
 ```
 
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
 
 ```ts
 import ImmudbClient from 'immudb-node'
@@ -520,15 +797,17 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 })()
 ```
 
-:::
+</TabItem>
 
-::: tab Others
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
 
-<WrappedSection>
+</Tabs>
+
 
 ## Filter Transactions
 
@@ -536,31 +815,161 @@ The transaction entries are generated by writing key-value pairs, referencing ke
 
 With `TxScan` or `TxByIDWithSpec` operations it's possible to retrieve entries of certain types, either retrieving the digest of the value assigned to the key (`EntryTypeAction_ONLY_DIGEST`), the raw value (`EntryTypeAction_RAW_VALUE`) or the structured value (`EntryTypeAction_RESOLVE`).
 
-</WrappedSection>
 
-:::: tabs
+<Tabs groupId="languages">
 
-::: tab Go
-<<< @/src/code-examples/go/develop-kv-txfilter/main.go
-:::
+<TabItem value="go" label="Go" default>
 
-::: tab Python
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/codenotary/immudb/pkg/api/schema"
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	hdr, err := client.ExecAll(
+		context.TODO(),
+		&schema.ExecAllRequest{
+			Operations: []*schema.Op{
+				{
+					Operation: &schema.Op_Kv{
+						Kv: &schema.KeyValue{
+							Key:   []byte("key1"),
+							Value: []byte("value1"),
+						},
+					},
+				},
+				{
+					Operation: &schema.Op_Ref{
+						Ref: &schema.ReferenceRequest{
+							Key:           []byte("ref1"),
+							ReferencedKey: []byte("key1"),
+						},
+					},
+				},
+				{
+					Operation: &schema.Op_ZAdd{
+						ZAdd: &schema.ZAddRequest{
+							Set:   []byte("set1"),
+							Score: 10,
+							Key:   []byte("key1"),
+						},
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// fetch kv and sorted-set entries as structured values
+	// while skipping sql-related entries
+	tx, err := client.TxByIDWithSpec(
+		context.TODO(),
+		&schema.TxRequest{
+			Tx: hdr.Id,
+			EntriesSpec: &schema.EntriesSpec{
+				KvEntriesSpec: &schema.EntryTypeSpec{
+					Action: schema.EntryTypeAction_RESOLVE,
+				},
+				ZEntriesSpec: &schema.EntryTypeSpec{
+					Action: schema.EntryTypeAction_RESOLVE,
+				},
+				// explicit exclusion is optional
+				SqlEntriesSpec: &schema.EntryTypeSpec{
+					// resolution of sql entries is not supported
+					Action: schema.EntryTypeAction_EXCLUDE,
+				},
+			},
+		},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, entry := range tx.KvEntries {
+		log.Printf(
+			"retrieved key %s and val %s",
+			entry.Key,
+			entry.Value,
+		)
+	}
+
+	for _, entry := range tx.ZEntries {
+		log.Printf(
+			"retrieved set %s key %s and score %v",
+			entry.Set,
+			entry.Key,
+			entry.Score,
+		)
+	}
+
+	// scan over unresolved entries
+	// either EntryTypeAction_ONLY_DIGEST or
+	// EntryTypeAction_RAW_VALUE options
+	for _, entry := range tx.Entries {
+		log.Printf(
+			"retrieved key %s and digest %v",
+			entry.Key,
+			entry.HValue,
+		)
+	}
+}
+```
+</TabItem>
+
+
+<TabItem value="python" label="Python">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Python sdk github project](https://github.com/codenotary/immudb-py/issues/new)
-:::
 
-::: tab Java
+</TabItem>
+
+
+<TabItem value="java" label="Java">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Java sdk github project](https://github.com/codenotary/immudb4j/issues/new)
-:::
 
-::: tab Node.js
+</TabItem>
+
+
+<TabItem value="node.js" label="Node.js">
+
 This feature is not yet supported or not documented.
 Do you want to make a feature request or help out? Open an issue on [Node.js sdk github project](https://github.com/codenotary/immudb-node/issues/new)
-:::
 
-::: tab Others
+</TabItem>
+
+
+<TabItem value="other" label="Others">
+
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
 
-::::
+</TabItem>
+
+</Tabs>

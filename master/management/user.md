@@ -1,7 +1,5 @@
 # User management
 
-<WrappedSection>
-
 ## Creating users and assigning permissions
 
 User management is exposed with following methods:
@@ -23,15 +21,78 @@ Non-admin permissions are:
 * PermissionR = 1
 * PermissionRW = 2
 
-</WrappedSection>
+<Tabs groupId="languages">
 
-:::: tabs
+<TabItem value="go" label="Go" default>
 
-::: tab Go
-<<< @/src/code-examples/go/user-create/main.go
-:::
+```go
+package main
 
-::: tab Java
+import (
+	"context"
+	"log"
+
+	"github.com/codenotary/immudb/pkg/api/schema"
+	"github.com/codenotary/immudb/pkg/auth"
+	immudb "github.com/codenotary/immudb/pkg/client"
+)
+
+func main() {
+	opts := immudb.DefaultOptions().
+		WithAddress("localhost").
+		WithPort(3322)
+
+	client := immudb.NewClient().WithOptions(opts)
+	err := client.OpenSession(
+		context.TODO(),
+		[]byte(`immudb`),
+		[]byte(`immudb`),
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.CloseSession(context.TODO())
+
+	err = client.CreateUser(
+		context.TODO(),
+		[]byte(`myNewUser1`),
+		[]byte(`myS3cretPassword!`),
+		auth.PermissionR,
+		"defaultdb",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = client.ChangePermission(
+		context.TODO(),
+		schema.PermissionAction_GRANT,
+		"myNewUser1",
+		"defaultDB",
+		auth.PermissionRW,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = client.ChangePassword(
+		context.TODO(),
+		[]byte(`myNewUser1`),
+		[]byte(`myS3cretPassword!`),
+		[]byte(`myNewS3cretPassword!`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+```
+
+</TabItem>
+
+
+<TabItem value="java" label="Java">
 
 ```java
 package io.codenotary.immudb.helloworld;
@@ -71,10 +132,11 @@ public class App {
 }
 ```
 
-:::
+</TabItem>
 
 
-::: tab Python
+
+<TabItem value="python" label="Python">
 ```python
 from grpc import RpcError
 from immudb import ImmudbClient
@@ -159,9 +221,10 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-:::
+</TabItem>
 
-::: tab Node.js
+
+<TabItem value="node.js" label="Node.js">
 ```ts
 import ImmudbClient from 'immudb-node'
 import Parameters from 'immudb-node/types/parameters'
@@ -204,9 +267,10 @@ const cl = new ImmudbClient({ host: IMMUDB_HOST, port: IMMUDB_PORT });
 	console.log('success: changePassword', changePermissionRes)
 })()
 ```
-:::
+</TabItem>
 
-::: tab .NET
+
+<TabItem value="net" label=".NET">
 
 ```csharp
 
@@ -228,13 +292,15 @@ await client.Close();
 
 ```
 
-:::
+</TabItem>
 
-::: tab Others
+
+<TabItem value="other" label="Others">
 If you're using another development language, please refer to the <a href="/connecting/immugw">immugw</a> option.
-:::
+</TabItem>
 
-::::
+
+</Tabs>
 
 <br/>
 
